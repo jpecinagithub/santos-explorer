@@ -11,16 +11,16 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'robots.txt', 'icons/*.png', 'icons/*.svg'],
       manifest: {
-        name: 'Vidas de Santos — Discover Every Saint',
+        name: 'Vidas de Santos — Descubre todos los santos',
         short_name: 'Santos',
         description:
-          'Search and explore 2,000+ saints by name, country, religious order or century. Bilingual EN/ES discovery portal with Wikipedia-powered biographies.',
+          'Busca y explora más de 2.000 santos por nombre, país, orden religiosa o siglo. Portal bilingüe ES/EN con biografías de Wikipedia.',
         theme_color: '#13161A',
         background_color: '#F7F6F3',
         display: 'standalone',
         start_url: '/',
         scope: '/',
-        lang: 'en',
+        lang: 'es',
         icons: [
           { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png' },
           { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png' },

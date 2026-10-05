@@ -8,9 +8,9 @@ export type Lang = "en" | "es";
 const stored = (() => {
   try {
     const v = localStorage.getItem("santos-explorer:lang");
-    return v === "es" ? "es" : "en"; // EN default per standing spec
+    return v === "en" ? "en" : "es"; // ES default per Jon's request (exception to standing EN-default spec)
   } catch {
-    return "en";
+    return "es";
   }
 })();
 
