@@ -16,7 +16,7 @@ interface Props {
 export default function SearchBar({ size = "compact", initialValue = "", onSelectSaint, autoFocus }: Props) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [value, setValue] = useState(initialValue);
+  const [query, setQuery] = useState(initialValue);
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
   const [debounced, setDebounced] = useState(initialValue);
@@ -24,9 +24,9 @@ export default function SearchBar({ size = "compact", initialValue = "", onSelec
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const id = setTimeout(() => setDebounced(value), 120);
+    const id = setTimeout(() => setDebounced(query), 120);
     return () => clearTimeout(id);
-  }, [value]);
+  }, [query]);
 
   const suggestions: Suggestion[] = useMemo(() => suggest(debounced), [debounced]);
 
@@ -58,10 +58,11 @@ export default function SearchBar({ size = "compact", initialValue = "", onSelec
       go(suggestions[active]);
       return;
     }
-    if (!value.trim()) return;
+    const v = inputRef.current?.value.trim() ?? "";
+    if (!v) return;
     setOpen(false);
-    trackEvent("search_performed", { query: value.trim().slice(0, 60) });
-    navigate(`/explorar?q=${encodeURIComponent(value.trim())}`);
+    trackEvent("search_performed", { query: v.slice(0, 60) });
+    navigate(`/explorar?q=${encodeURIComponent(v)}`);
   };
 
   const onKey = (e: React.KeyboardEvent) => {
@@ -88,10 +89,10 @@ export default function SearchBar({ size = "compact", initialValue = "", onSelec
           />
           <input
             ref={inputRef}
-            value={value}
+            defaultValue={initialValue}
             autoFocus={autoFocus}
             onChange={(e) => {
-              setValue(e.target.value);
+              setQuery(e.target.value);
               setOpen(true);
             }}
             onFocus={() => setOpen(true)}

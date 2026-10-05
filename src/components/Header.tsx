@@ -7,7 +7,6 @@ import { trackEvent } from "../lib/analytics";
 export default function Header() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [q, setQ] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
 
   const nav = [
@@ -18,11 +17,12 @@ export default function Header() {
     { to: "/estadisticas", label: t("nav.statistics") },
   ];
 
-  const submit = (e: React.FormEvent) => {
+  const submit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!q.trim()) return;
-    trackEvent("search_performed", { query: q.trim().slice(0, 60) });
-    navigate(`/explorar?q=${encodeURIComponent(q.trim())}`);
+    const v = e.currentTarget.querySelector("input")?.value.trim() ?? "";
+    if (!v) return;
+    trackEvent("search_performed", { query: v.slice(0, 60) });
+    navigate(`/explorar?q=${encodeURIComponent(v)}`);
     setMenuOpen(false);
   };
 
@@ -56,8 +56,7 @@ export default function Header() {
             <div className="relative">
               <SearchIcon className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted pointer-events-none" />
               <input
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
+                defaultValue=""
                 placeholder={t("nav.searchPlaceholder")}
                 aria-label={t("common.search")}
                 autoComplete="off"
@@ -89,8 +88,7 @@ export default function Header() {
             <div className="relative">
               <SearchIcon className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted pointer-events-none" />
               <input
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
+                defaultValue=""
                 placeholder={t("nav.searchPlaceholder")}
                 aria-label={t("common.search")}
                 autoComplete="off"
