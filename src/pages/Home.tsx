@@ -53,7 +53,7 @@ export default function Home() {
     const s = randomSaint();
     trackEvent("random_saint", { from: "home" });
     pushRecent(s.id);
-    navigate(`/saint/${s.id}`);
+    navigate(`/santo/${s.id}`);
   };
 
   const tagCards: { tag: SaintTag; n: number }[] = TAGS.map((tag) => ({ tag, n: tagCount(tag) })).sort((a, b) => b.n - a.n);
@@ -92,14 +92,14 @@ export default function Home() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 py-14 space-y-20">
         {/* Categories */}
         <section>
-          <SectionHead title={t("home.categoriesTitle")} sub={t("home.categoriesText")} linkTo="/tags" linkLabel={t("common.viewAll")} />
+          <SectionHead title={t("home.categoriesTitle")} sub={t("home.categoriesText")} linkTo="/categorias" linkLabel={t("common.viewAll")} />
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {tagCards.slice(0, 8).map(({ tag, n }) => {
               const Icon = TAG_ICONS[tag];
               return (
                 <Link
                   key={tag}
-                  to={`/tag/${TAG_SLUG[tag]}`}
+                  to={`/categoria/${TAG_SLUG[tag]}`}
                   className="group bg-white border border-line rounded-2xl p-5 hover:shadow-lg hover:border-accent/50 hover:-translate-y-0.5 transition-all"
                 >
                   <span className="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-accent-soft text-accent-deep mb-3 group-hover:bg-accent group-hover:text-white transition-colors">
@@ -115,12 +115,12 @@ export default function Home() {
 
         {/* Religious orders */}
         <section>
-          <SectionHead title={t("home.ordersTitle")} sub={t("home.ordersText")} linkTo="/orders" linkLabel={t("common.viewAll")} />
+          <SectionHead title={t("home.ordersTitle")} sub={t("home.ordersText")} linkTo="/ordenes" linkLabel={t("common.viewAll")} />
           <div className="flex flex-wrap gap-2.5">
             {orders.map((o) => (
               <Link
                 key={o.id}
-                to={`/order/${o.id}`}
+                to={`/orden/${o.id}`}
                 className="px-4 py-2 rounded-full bg-white border border-line text-sm font-medium hover:border-accent hover:text-accent-deep transition-colors"
               >
                 {o.es}
@@ -132,12 +132,12 @@ export default function Home() {
 
         {/* Centuries */}
         <section>
-          <SectionHead title={t("home.centuriesTitle")} sub={t("home.centuriesText")} linkTo="/centuries" linkLabel={t("common.viewAll")} />
+          <SectionHead title={t("home.centuriesTitle")} sub={t("home.centuriesText")} linkTo="/siglos" linkLabel={t("common.viewAll")} />
           <div className="grid grid-cols-4 sm:grid-cols-7 gap-2.5">
             {centuries.map((c) => (
               <Link
                 key={c.century}
-                to={`/century/${c.century}`}
+                to={`/siglo/${c.century}`}
                 className="bg-white border border-line rounded-xl py-3 px-2 text-center hover:border-accent hover:shadow transition-all"
               >
                 <p className="font-bold text-sm">{centuryLabel(c.century)}</p>
@@ -149,7 +149,7 @@ export default function Home() {
 
         {/* Famous */}
         <section>
-          <SectionHead title={t("home.famousTitle")} sub="" linkTo="/discover" linkLabel={t("common.viewAll")} />
+          <SectionHead title={t("home.famousTitle")} sub="" linkTo="/descubrir" linkLabel={t("common.viewAll")} />
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {famous.map((s) => (
               <SaintCard key={s.id} saint={s} onOpen={openSaint} />
@@ -191,7 +191,7 @@ export default function Home() {
                 ))}
               </ul>
             )}
-            <Link to="/explore" className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent-deep mt-5 hover:gap-2.5 transition-all">
+            <Link to="/explorar" className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent-deep mt-5 hover:gap-2.5 transition-all">
               {t("home.ctaExplore")}
               <ArrowRightIcon className="w-4 h-4" />
             </Link>

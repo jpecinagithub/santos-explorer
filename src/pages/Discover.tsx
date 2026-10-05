@@ -21,12 +21,12 @@ export default function Discover() {
   const { openSaint } = useReader();
 
   const collections: { key: string; title: string; text: string; to: string; icon: keyof typeof TAG_ICONS | null }[] = [
-    { key: "martyrs", title: t("discover.martyrsTitle"), text: t("discover.martyrsText"), to: "/tag/martyrs", icon: "martyr" },
-    { key: "doctors", title: t("discover.doctorsTitle"), text: t("discover.doctorsText"), to: "/tag/doctors", icon: "doctor" },
-    { key: "founders", title: t("discover.foundersTitle"), text: t("discover.foundersText"), to: "/tag/founders", icon: "founder" },
-    { key: "popes", title: t("discover.popesTitle"), text: t("discover.popesText"), to: "/tag/popes", icon: "pope" },
-    { key: "mystics", title: t("discover.mysticsTitle"), text: t("discover.mysticsText"), to: "/tag/mystics", icon: "mystic" },
-    { key: "missionaries", title: t("discover.missionariesTitle"), text: t("discover.missionariesText"), to: "/tag/missionaries", icon: "missionary" },
+    { key: "martires", title: t("discover.martyrsTitle"), text: t("discover.martyrsText"), to: `/categoria/${TAG_SLUG.martir}`, icon: "martir" },
+    { key: "doctores", title: t("discover.doctorsTitle"), text: t("discover.doctorsText"), to: `/categoria/${TAG_SLUG.doctor}`, icon: "doctor" },
+    { key: "fundadores", title: t("discover.foundersTitle"), text: t("discover.foundersText"), to: `/categoria/${TAG_SLUG.fundador}`, icon: "fundador" },
+    { key: "papas", title: t("discover.popesTitle"), text: t("discover.popesText"), to: `/categoria/${TAG_SLUG.papa}`, icon: "papa" },
+    { key: "misticos", title: t("discover.mysticsTitle"), text: t("discover.mysticsText"), to: `/categoria/${TAG_SLUG.mistico}`, icon: "mistico" },
+    { key: "misioneros", title: t("discover.missionariesTitle"), text: t("discover.missionariesText"), to: `/categoria/${TAG_SLUG.misionero}`, icon: "misionero" },
   ];
 
   const women = womenSaints().slice(0, 3);
@@ -37,12 +37,12 @@ export default function Discover() {
     const s = randomSaint();
     trackEvent("random_saint", { from: "discover" });
     pushRecent(s.id);
-    navigate(`/saint/${s.id}`);
+    navigate(`/santo/${s.id}`);
   };
 
   return (
     <>
-      <Seo title={t("discover.title")} path="/discover" />
+      <Seo title={t("discover.title")} path="/descubrir" />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 py-10">
         <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-2">{t("discover.title")}</h1>
         <p className="text-muted mb-10">{t("discover.subtitle")}</p>
@@ -68,12 +68,12 @@ export default function Discover() {
           })}
         </div>
 
-        <CollectionRow title={t("discover.womenTitle")} text={t("discover.womenText")} saints={women} onOpen={openSaint} link="/explore?sex=f" linkLabel={t("common.viewAll")} />
+        <CollectionRow title={t("discover.womenTitle")} text={t("discover.womenText")} saints={women} onOpen={openSaint} link="/explorar?sex=f" linkLabel={t("common.viewAll")} />
         <div className="mt-12">
-          <CollectionRow title={t("discover.blessedTitle")} text={t("discover.blessedText")} saints={blessed} onOpen={openSaint} link="/explore?status=blessed" linkLabel={t("common.viewAll")} />
+          <CollectionRow title={t("discover.blessedTitle")} text={t("discover.blessedText")} saints={blessed} onOpen={openSaint} link="/explorar?status=blessed" linkLabel={t("common.viewAll")} />
         </div>
         <div className="mt-12">
-          <CollectionRow title={t("discover.doctorsTitle")} text={t("discover.doctorsText")} saints={saintsByTag("doctor").slice(0, 3)} onOpen={openSaint} link={`/tag/${TAG_SLUG.doctor}`} linkLabel={t("common.viewAll")} />
+          <CollectionRow title={t("discover.doctorsTitle")} text={t("discover.doctorsText")} saints={saintsByTag("doctor").slice(0, 3)} onOpen={openSaint} link={`/categoria/${TAG_SLUG.doctor}`} linkLabel={t("common.viewAll")} />
         </div>
 
         <div className="mt-16 bg-night text-white rounded-2xl p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">

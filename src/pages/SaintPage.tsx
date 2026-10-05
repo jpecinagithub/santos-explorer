@@ -26,7 +26,7 @@ export default function SaintPage() {
     return (
       <div className="mx-auto max-w-3xl px-4 py-24 text-center">
         <h1 className="text-3xl font-bold mb-4">{t("common.notFound")}</h1>
-        <Link to="/explore" className="px-6 py-2.5 rounded-full bg-night text-white text-sm font-medium">
+        <Link to="/explorar" className="px-6 py-2.5 rounded-full bg-night text-white text-sm font-medium">
           {t("explore.title")}
         </Link>
       </div>
@@ -42,7 +42,7 @@ export default function SaintPage() {
       <Seo
         title={saint.name}
         description={saint.summary}
-        path={`/saint/${saint.id}`}
+        path={`/santo/${saint.id}`}
         image={saint.thumb ?? undefined}
       />
       <div className="mx-auto max-w-4xl px-4 sm:px-6 py-10">

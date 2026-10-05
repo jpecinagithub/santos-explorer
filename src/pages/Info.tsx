@@ -5,7 +5,7 @@ export function Sources() {
   const { t } = useTranslation();
   return (
     <>
-      <Seo title={t("sources.title")} path="/sources" />
+      <Seo title={t("sources.title")} path="/fuentes" />
       <div className="mx-auto max-w-3xl px-4 sm:px-6 py-12">
         <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent-deep mb-3">
           {t("sources.kicker")}
@@ -25,7 +25,7 @@ export function Privacy() {
   const { t } = useTranslation();
   return (
     <>
-      <Seo title={t("privacy.title")} path="/privacy" />
+      <Seo title={t("privacy.title")} path="/privacidad" />
       <div className="mx-auto max-w-3xl px-4 sm:px-6 py-12">
         <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent-deep mb-3">
           {t("privacy.kicker")}

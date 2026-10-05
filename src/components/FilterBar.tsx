@@ -107,8 +107,8 @@ export default function FilterBar({ filters, onChange, resultCount }: Props) {
             {(
               [
                 ["all", t("explore.all")],
-                ["saint", t("explore.statusSaint")],
-                ["blessed", t("explore.statusBlessed")],
+                ["santo", t("explore.statusSaint")],
+                ["beato", t("explore.statusBlessed")],
               ] as const
             ).map(([v, label]) => (
               <FilterPill key={v} active={filters.status === v} onClick={() => set({ status: v })}>

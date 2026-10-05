@@ -65,20 +65,20 @@ export default function App() {
               >
               <Routes>
                 <Route path="/" element={<Home />} />
-                <Route path="/explore" element={<Explore />} />
-                <Route path="/discover" element={<Discover />} />
-                <Route path="/saint/:id" element={<SaintPage />} />
-                <Route path="/tags" element={<TagsPage />} />
-                <Route path="/tag/:slug" element={<TagPage />} />
-                <Route path="/orders" element={<OrdersPage />} />
-                <Route path="/order/:orderId" element={<OrderPage />} />
-                <Route path="/centuries" element={<CenturiesPage />} />
-                <Route path="/century/:n" element={<CenturyPage />} />
-                <Route path="/history" element={<History />} />
-                <Route path="/statistics" element={<Statistics />} />
-                <Route path="/sources" element={<Sources />} />
-                <Route path="/privacy" element={<Privacy />} />
-                <Route path="/author" element={<Author />} />
+                <Route path="/explorar" element={<Explore />} />
+                <Route path="/descubrir" element={<Discover />} />
+                <Route path="/santo/:id" element={<SaintPage />} />
+                <Route path="/categorias" element={<TagsPage />} />
+                <Route path="/categoria/:slug" element={<TagPage />} />
+                <Route path="/ordenes" element={<OrdersPage />} />
+                <Route path="/orden/:orderId" element={<OrderPage />} />
+                <Route path="/siglos" element={<CenturiesPage />} />
+                <Route path="/siglo/:n" element={<CenturyPage />} />
+                <Route path="/historia" element={<History />} />
+                <Route path="/estadisticas" element={<Statistics />} />
+                <Route path="/fuentes" element={<Sources />} />
+                <Route path="/privacidad" element={<Privacy />} />
+                <Route path="/autor" element={<Author />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
               </Suspense>

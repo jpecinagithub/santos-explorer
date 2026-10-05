@@ -47,17 +47,17 @@ const fuse = new Fuse(docs, {
 // ---------------------------------------------------------------- parsing --
 // Palabras en español para el parseo de consultas ("mártires siglo III", "beato franciscano").
 const TAG_WORDS: { words: string[]; tag: SaintTag }[] = [
-  { words: ["martir", "mártir", "martires", "mártires"], tag: "martyr" },
+  { words: ["martir", "mártir", "martires", "mártires"], tag: "martir" },
   { words: ["doctor", "doctores", "doctora", "doctoras"], tag: "doctor" },
-  { words: ["papa", "papas"], tag: "pope" },
-  { words: ["apostol", "apóstol", "apostoles", "apóstoles"], tag: "apostle" },
-  { words: ["evangelista", "evangelistas"], tag: "evangelist" },
-  { words: ["fundador", "fundadora", "fundadores", "fundadoras"], tag: "founder" },
-  { words: ["mistico", "místico", "mistica", "mística", "misticos", "místicos"], tag: "mystic" },
-  { words: ["misionero", "misionera", "misioneros", "misioneras"], tag: "missionary" },
-  { words: ["virgen", "virgenes", "vírgenes"], tag: "virgin" },
-  { words: ["ermitaño", "ermitano", "ermitaños", "anacoreta", "anacoretas"], tag: "hermit" },
-  { words: ["teologo", "teólogo", "teologos", "teólogos"], tag: "theologian" },
+  { words: ["papa", "papas"], tag: "papa" },
+  { words: ["apostol", "apóstol", "apostoles", "apóstoles"], tag: "apostol" },
+  { words: ["evangelista", "evangelistas"], tag: "evangelista" },
+  { words: ["fundador", "fundadora", "fundadores", "fundadoras"], tag: "fundador" },
+  { words: ["mistico", "místico", "mistica", "mística", "misticos", "místicos"], tag: "mistico" },
+  { words: ["misionero", "misionera", "misioneros", "misioneras"], tag: "misionero" },
+  { words: ["virgen", "virgenes", "vírgenes"], tag: "virgen" },
+  { words: ["ermitaño", "ermitano", "ermitaños", "anacoreta", "anacoretas"], tag: "ermitano" },
+  { words: ["teologo", "teólogo", "teologos", "teólogos"], tag: "teologo" },
 ];
 
 const ROMAN: Record<string, number> = {
@@ -69,7 +69,7 @@ export interface ParsedQuery {
   text: string;
   century: number | null;
   tag: SaintTag | null;
-  status: "saint" | "blessed" | null;
+  status: "santo" | "beato" | null;
 }
 
 /** Extract structured hints (century, tag, status) from free text. Deterministic, no LLM. */
@@ -78,7 +78,7 @@ export function parseQuery(q: string): ParsedQuery {
   let text = n;
   let century: number | null = null;
   let tag: SaintTag | null = null;
-  let status: "saint" | "blessed" | null = null;
+  let status: "santo" | "beato" | null = null;
 
   // Siglo: "siglo xiii", "s. xiii", "s xiii"
   const sigloMatch = n.match(/\b(?:siglo|s\.?)\s*([ivxl]+|\d{1,2})\b/);
@@ -91,7 +91,7 @@ export function parseQuery(q: string): ParsedQuery {
 
   // Estado: beato/a/os/as
   if (/\bbeat[oa]s?\b/.test(text)) {
-    status = "blessed";
+    status = "beato";
     text = text.replace(/\bbeat[oa]s?\b/g, " ");
   }
 
@@ -168,17 +168,17 @@ export interface Suggestion {
 
 /** Nombres de categoría en español para las pistas del autocompletado. */
 const TAG_ES: Record<SaintTag, string> = {
-  martyr: "mártires",
+  martir: "mártires",
   doctor: "doctores",
-  pope: "papas",
-  apostle: "apóstoles",
-  evangelist: "evangelistas",
-  founder: "fundadores",
-  mystic: "místicos",
-  missionary: "misioneros",
-  virgin: "vírgenes",
-  hermit: "ermitaños",
-  theologian: "teólogos",
+  papa: "papas",
+  apostol: "apóstoles",
+  evangelista: "evangelistas",
+  fundador: "fundadores",
+  mistico: "místicos",
+  misionero: "misioneros",
+  virgen: "vírgenes",
+  ermitano: "ermitaños",
+  teologo: "teólogos",
 };
 
 /** Fast suggestions for the command-style autocomplete panel. */

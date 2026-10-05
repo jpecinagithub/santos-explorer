@@ -89,30 +89,30 @@ export function womenSaints(): Saint[] {
 }
 
 export function blessedList(): Saint[] {
-  return saints.filter((s) => s.status === "blessed");
+  return saints.filter((s) => s.status === "beato");
 }
 
 /** Santos muy conocidos presentes en el índice (por id, estable ante cambios de nombre). */
 export function famousSaints(): Saint[] {
   const ids = [
-    "francis-of-assisi",
-    "teresa-of-avila",
-    "thomas-aquinas",
-    "augustine-of-hippo",
-    "pope-john-paul-ii",
-    "mother-teresa",
-    "therese-of-lisieux",
-    "ignatius-of-loyola",
-    "catherine-of-siena",
-    "anthony-of-padua",
-    "saint-patrick",
-    "francis-xavier",
-    "john-of-the-cross",
-    "padre-pio",
-    "joan-of-arc",
-    "thomas-more",
-    "maximilian-kolbe",
-    "oscar-romero",
+    "francisco-de-asis",
+    "teresa-de-jesus",
+    "tomas-de-aquino",
+    "agustin-de-hipona",
+    "juan-pablo-ii",
+    "teresa-de-calcuta",
+    "teresa-de-lisieux",
+    "ignacio-de-loyola",
+    "catalina-de-siena",
+    "antonio-de-padua",
+    "patricio-de-irlanda",
+    "francisco-javier",
+    "juan-de-la-cruz",
+    "pio-de-pietrelcina",
+    "juana-de-arco",
+    "tomas-moro",
+    "maximiliano-kolbe",
+    "oscar-arnulfo-romero",
   ];
   return ids.map((id) => byId.get(id)).filter((s): s is Saint => !!s);
 }

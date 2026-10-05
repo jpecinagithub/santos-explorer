@@ -45,7 +45,7 @@ export default function SearchBar({ size = "compact", initialValue = "", onSelec
     if (s.kind === "saint" && s.saint) {
       trackEvent("saint_opened", { name: s.saint.name, from: "autocomplete" });
       if (onSelectSaint) onSelectSaint(s.saint);
-      else navigate(`/saint/${s.saint.id}`);
+      else navigate(`/santo/${s.saint.id}`);
     } else if (s.query) {
       trackEvent("search_performed", { query: s.query.slice(0, 60) });
       navigate(`/explore?q=${encodeURIComponent(s.query)}`);

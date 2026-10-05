@@ -1,15 +1,15 @@
 export type SaintTag =
-  | "martyr"
+  | "martir"
   | "doctor"
-  | "pope"
-  | "apostle"
-  | "evangelist"
-  | "founder"
-  | "mystic"
-  | "missionary"
-  | "virgin"
-  | "hermit"
-  | "theologian";
+  | "papa"
+  | "apostol"
+  | "evangelista"
+  | "fundador"
+  | "mistico"
+  | "misionero"
+  | "virgen"
+  | "ermitano"
+  | "teologo";
 
 export interface SaintCountry {
   c: string; // ISO code (or Wikidata QID fallback)
@@ -25,7 +25,7 @@ export interface Saint {
   country: SaintCountry | null;
   order: string | null; // order id, see SaintOrder
   sex: "m" | "f" | null;
-  status: "saint" | "blessed";
+  status: "santo" | "beato";
   tags: SaintTag[];
   roles: string[];
   summary: string; // resumen en español
@@ -44,36 +44,36 @@ export interface ExploreFilters {
   order: string | "all";
   country: string | null; // country code
   century: number | null;
-  status: "all" | "saint" | "blessed";
+  status: "all" | "santo" | "beato";
   sex: "all" | "m" | "f";
 }
 
 export const TAGS: SaintTag[] = [
-  "martyr",
+  "martir",
   "doctor",
-  "pope",
-  "apostle",
-  "evangelist",
-  "founder",
-  "mystic",
-  "missionary",
-  "virgin",
-  "hermit",
-  "theologian",
+  "papa",
+  "apostol",
+  "evangelista",
+  "fundador",
+  "mistico",
+  "misionero",
+  "virgen",
+  "ermitano",
+  "teologo",
 ];
 
 export const TAG_SLUG: Record<SaintTag, string> = {
-  martyr: "martyrs",
-  doctor: "doctors",
-  pope: "popes",
-  apostle: "apostles",
-  evangelist: "evangelists",
-  founder: "founders",
-  mystic: "mystics",
-  missionary: "missionaries",
-  virgin: "virgins",
-  hermit: "hermits",
-  theologian: "theologians",
+  martir: "martires",
+  doctor: "doctores",
+  papa: "papas",
+  apostol: "apostoles",
+  evangelista: "evangelistas",
+  fundador: "fundadores",
+  mistico: "misticos",
+  misionero: "misioneros",
+  virgen: "virgenes",
+  ermitano: "ermitanos",
+  teologo: "teologos",
 };
 
 export const SLUG_TAG: Record<string, SaintTag> = Object.fromEntries(

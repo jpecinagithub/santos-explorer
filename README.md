@@ -1,6 +1,6 @@
 # Vidas de Santos
 
-**Descubre 1.692 santos — todos los santos, a una búsqueda.**
+**Descubre 1.690 santos — todos los santos, a una búsqueda.**
 
 Portal en español para descubrir las vidas de los santos, con la misma arquitectura ligera que Nobel Explorer: un índice local compacto más biografías de Wikipedia bajo demanda. Sin backend — todo funciona en el navegador.
 
@@ -22,7 +22,7 @@ El índice se compila de fuentes públicas — sin scraping de contenido con cop
 1. `scripts/fetch-saints.mjs` — lista de santos desde la *List of Catholic saints* de la Wikipedia en inglés; extractos por artículo, miniaturas y IDs de Wikidata (API de MediaWiki); claims estructurados de Wikidata (P27 país, P569/P570 fechas, P21 sexo, P463 orden religiosa); resolución de entidades para países (códigos ISO P298) y órdenes.
 2. `scripts/repair-extracts.mjs` — recupera extractos truncados por el límite por petición de TextExtracts.
 3. `scripts/fetch-es-summaries.mjs` — mapea cada artículo inglés a su artículo en español vía `langlinks` de la API (`lllimit=500`: por defecto solo devuelve 10) y descarga los resúmenes de es.wikipedia. Escribe `scripts/.cache/es-summaries.json` y `es-titles.json`.
-4. `scripts/build-saints.mjs` — enriquecimiento: detección de órdenes (etiquetas Wikidata + 40 familias por palabras clave), país desde Wikidata con alternativa por gentilicios, los 37 Doctores de la Iglesia, apóstoles, evangelistas, mártires/fundadores/místicos/misioneros por análisis de palabras clave, estado santo/beato, siglos. **Solo incluye santos con resumen en español (1.692)**; nombres, resúmenes y países en español. Escribe `src/data/saints.json` + `src/data/meta.json`.
+4. `scripts/build-saints.mjs` — enriquecimiento: detección de órdenes (etiquetas Wikidata + 40 familias por palabras clave), país desde Wikidata con alternativa por gentilicios, los 37 Doctores de la Iglesia, apóstoles, evangelistas, mártires/fundadores/místicos/misioneros por análisis de palabras clave, estado santo/beato, siglos. **Solo incluye santos con resumen en español (1.690)**; nombres, resúmenes y países en español. Escribe `src/data/saints.json` + `src/data/meta.json`.
 
 Las biografías completas no van empaquetadas — se cargan en directo desde Wikipedia en español, lo que las mantiene actualizadas y con la licencia correcta (CC BY-SA).
 

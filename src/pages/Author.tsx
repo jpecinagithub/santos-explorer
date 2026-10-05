@@ -6,7 +6,7 @@ export default function Author() {
   const { t } = useTranslation();
   return (
     <>
-      <Seo title={t("author.title")} path="/author" />
+      <Seo title={t("author.title")} path="/autor" />
       <div className="mx-auto max-w-3xl px-4 sm:px-6 py-12">
         <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent-deep mb-3">
           {t("author.kicker")}

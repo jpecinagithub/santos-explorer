@@ -118,17 +118,17 @@ export function TheologianIcon(props: P) {
 }
 
 export const TAG_ICONS: Record<SaintTag, (p: P) => ReactElement> = {
-  martyr: MartyrIcon,
+  martir: MartyrIcon,
   doctor: DoctorIcon,
-  pope: PopeIcon,
-  apostle: ApostleIcon,
-  evangelist: EvangelistIcon,
-  founder: FounderIcon,
-  mystic: MysticIcon,
-  missionary: MissionaryIcon,
-  virgin: VirginIcon,
-  hermit: HermitIcon,
-  theologian: TheologianIcon,
+  papa: PopeIcon,
+  apostol: ApostleIcon,
+  evangelista: EvangelistIcon,
+  fundador: FounderIcon,
+  mistico: MysticIcon,
+  misionero: MissionaryIcon,
+  virgen: VirginIcon,
+  ermitano: HermitIcon,
+  teologo: TheologianIcon,
 };
 
 export function SearchIcon(props: P) {

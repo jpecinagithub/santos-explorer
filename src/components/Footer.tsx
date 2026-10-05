@@ -23,12 +23,12 @@ export default function Footer() {
               {t("footer.sections")}
             </h3>
             <ul className="space-y-2.5 text-sm">
-              <li><Link to="/explore" className="hover:text-accent">{t("nav.explore")}</Link></li>
-              <li><Link to="/tags" className="hover:text-accent">{t("nav.tags")}</Link></li>
-              <li><Link to="/orders" className="hover:text-accent">{t("nav.orders")}</Link></li>
-              <li><Link to="/centuries" className="hover:text-accent">{t("nav.centuries")}</Link></li>
-              <li><Link to="/history" className="hover:text-accent">{t("nav.history")}</Link></li>
-              <li><Link to="/statistics" className="hover:text-accent">{t("nav.statistics")}</Link></li>
+              <li><Link to="/explorar" className="hover:text-accent">{t("nav.explore")}</Link></li>
+              <li><Link to="/categorias" className="hover:text-accent">{t("nav.tags")}</Link></li>
+              <li><Link to="/ordenes" className="hover:text-accent">{t("nav.orders")}</Link></li>
+              <li><Link to="/siglos" className="hover:text-accent">{t("nav.centuries")}</Link></li>
+              <li><Link to="/historia" className="hover:text-accent">{t("nav.history")}</Link></li>
+              <li><Link to="/estadisticas" className="hover:text-accent">{t("nav.statistics")}</Link></li>
             </ul>
           </div>
           <div>
@@ -36,14 +36,14 @@ export default function Footer() {
               {t("footer.project")}
             </h3>
             <ul className="space-y-2.5 text-sm">
-              <li><Link to="/sources" className="hover:text-accent">{t("footer.sources")}</Link></li>
-              <li><Link to="/author" className="hover:text-accent">{t("footer.author")}</Link></li>
-              <li><Link to="/privacy" className="hover:text-accent">{t("footer.privacy")}</Link></li>
+              <li><Link to="/fuentes" className="hover:text-accent">{t("footer.sources")}</Link></li>
+              <li><Link to="/autor" className="hover:text-accent">{t("footer.author")}</Link></li>
+              <li><Link to="/privacidad" className="hover:text-accent">{t("footer.privacy")}</Link></li>
             </ul>
           </div>
         </div>
         <div className="border-t border-white/10 mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-white/50">
-          <span>Vidas de Santos · <Link to="/author" className="hover:text-accent">{t("footer.madeBy")}</Link> · jpecina@gmail.com</span>
+          <span>Vidas de Santos · <Link to="/autor" className="hover:text-accent">{t("footer.madeBy")}</Link> · jpecina@gmail.com</span>
           <span>Data: Wikipedia &amp; Wikidata · Biographies: Wikipedia (CC BY-SA)</span>
         </div>
       </div>

@@ -45,7 +45,7 @@ export default function SaintCard({
 }) {
   const { t } = useTranslation();
   const dates = yearRange(saint);
-  const statusLabel = saint.status === "blessed" ? t("card.blessed") : t("card.saint");
+  const statusLabel = saint.status === "beato" ? t("card.blessed") : t("card.saint");
 
   const inner = (
     <>
@@ -85,7 +85,7 @@ export default function SaintCard({
     );
   }
   return (
-    <Link to={`/saint/${saint.id}`} className={cls}>
+    <Link to={`/santo/${saint.id}`} className={cls}>
       {inner}
     </Link>
   );

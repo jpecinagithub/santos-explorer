@@ -47,7 +47,7 @@ try {
   check("home loads", await page.locator("h1").count() > 0);
   check("hero search present", await page.locator('input[role="combobox"]').count() > 0);
   const statText = await page.locator("section").first().textContent();
-  check("stats mention saints", /1[.,]692/.test(statText || ""), (statText || "").slice(0, 60));
+  check("stats mention saints", /1[.,]690/.test(statText || ""), (statText || "").slice(0, 60));
 
   // 2. Autocomplete
   await page.locator('input[role="combobox"]').first().fill("Teresa");
@@ -56,13 +56,13 @@ try {
   check("autocomplete suggestions", sugg > 0, `${sugg} options`);
 
   // 3. Explore with query
-  await page.goto(base + "/explore?q=martires", { waitUntil: "networkidle" });
+  await page.goto(base + "/explorar?q=martires", { waitUntil: "networkidle" });
   await page.waitForTimeout(800);
-  const cards = await page.locator("main a[href^='/saint/'], main button").count();
+  const cards = await page.locator("main a[href^='/santo/'], main button").count();
   check("explore results render", cards > 3, `${cards} cards/buttons`);
 
   // 4. Saint page
-  await page.goto(base + "/saint/francis-of-assisi", { waitUntil: "networkidle" });
+  await page.goto(base + "/santo/francisco-de-asis", { waitUntil: "networkidle" });
   await page.waitForTimeout(500);
   const h1 = await page.locator("h1").first().textContent();
   check("saint page title", (h1 || "").includes("Francisco de As\u00eds"), h1 || "");
@@ -75,7 +75,7 @@ try {
   check("wiki reader degrades gracefully offline", graceful);
 
   // 6. Taxonomy pages
-  for (const [path, marker] of [["/tags", "M\u00e1rtires"], ["/orders", "Franciscanos"], ["/centuries", "Siglo"], ["/statistics", "Estad\u00edsticas"], ["/discover", "Descubrir"]]) {
+  for (const [path, marker] of [["/categorias", "M\u00e1rtires"], ["/ordenes", "Franciscanos"], ["/siglos", "Siglo"], ["/estadisticas", "Estad\u00edsticas"], ["/descubrir", "Descubrir"]]) {
     await page.goto(base + path, { waitUntil: "networkidle" });
     await page.waitForTimeout(400);
     const t = await page.locator("main").textContent();
@@ -83,7 +83,7 @@ try {
   }
 
   // 7. Tag page
-  await page.goto(base + "/tag/doctors", { waitUntil: "networkidle" });
+  await page.goto(base + "/categoria/doctores", { waitUntil: "networkidle" });
   await page.waitForTimeout(500);
   const tagText = await page.locator("main").textContent();
   check("tag page lists doctors", /Tom\u00e1s de Aquino|Agust\u00edn/i.test(tagText || ""));
@@ -102,7 +102,7 @@ try {
   await page.waitForTimeout(500);
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   check("mobile no horizontal overflow (home)", overflow <= 1, `overflow=${overflow}px`);
-  await page.goto(base + "/explore?q=francisco", { waitUntil: "networkidle" });
+  await page.goto(base + "/explorar?q=francisco", { waitUntil: "networkidle" });
   await page.waitForTimeout(500);
   const overflow2 = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   check("mobile no horizontal overflow (explore)", overflow2 <= 1, `overflow=${overflow2}px`);
@@ -117,7 +117,7 @@ try {
 
   // 11. Sitemap
   const sm = await (await fetch(base + "/sitemap.xml")).text();
-  check("sitemap has saint urls", sm.includes("/saint/francis-of-assisi"), `${(sm.match(/<url>/g) || []).length} urls`);
+  check("sitemap has saint urls", sm.includes("/santo/francisco-de-asis"), `${(sm.match(/<url>/g) || []).length} urls`);
 
   // 12. No page errors
   check("zero page/console errors", errors.length === 0, errors.slice(0, 3).join(" | "));

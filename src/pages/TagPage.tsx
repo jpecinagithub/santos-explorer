@@ -14,7 +14,7 @@ export function TagsPage() {
   const tags = TAGS.map((tag) => ({ tag, n: tagCount(tag) })).sort((a, b) => b.n - a.n);
   return (
     <>
-      <Seo title={t("tags.title")} path="/tags" />
+      <Seo title={t("tags.title")} path="/categorias" />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 py-10">
         <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-2">{t("tags.title")}</h1>
         <p className="text-muted mb-8">{t("tags.subtitle")}</p>
@@ -24,7 +24,7 @@ export function TagsPage() {
             return (
               <Link
                 key={tag}
-                to={`/tag/${TAG_SLUG[tag]}`}
+                to={`/categoria/${TAG_SLUG[tag]}`}
                 className="group bg-white border border-line rounded-2xl p-6 hover:shadow-lg hover:border-accent/50 hover:-translate-y-0.5 transition-all"
               >
                 <span className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-accent-soft text-accent-deep mb-4 group-hover:bg-accent group-hover:text-white transition-colors">
@@ -56,7 +56,7 @@ export function TagPage() {
     return (
       <div className="mx-auto max-w-3xl px-4 py-24 text-center">
         <h1 className="text-3xl font-bold mb-4">{t("common.notFound")}</h1>
-        <Link to="/tags" className="px-6 py-2.5 rounded-full bg-night text-white text-sm font-medium">
+        <Link to="/categorias" className="px-6 py-2.5 rounded-full bg-night text-white text-sm font-medium">
           {t("tags.title")}
         </Link>
       </div>
@@ -68,7 +68,7 @@ export function TagPage() {
 
   return (
     <>
-      <Seo title={t(`tags.${tag}`)} description={t(`tags.${tag}Desc`)} path={`/tag/${slug}`} />
+      <Seo title={t(`tags.${tag}`)} description={t(`tags.${tag}Desc`)} path={`/categoria/${slug}`} />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 py-10">
         <div className="flex items-center gap-4 mb-2">
           <span className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-accent-soft text-accent-deep">

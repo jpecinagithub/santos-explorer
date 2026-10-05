@@ -11,18 +11,18 @@ export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const nav = [
-    { to: "/explore", label: t("nav.explore") },
-    { to: "/tags", label: t("nav.tags") },
-    { to: "/orders", label: t("nav.orders") },
-    { to: "/centuries", label: t("nav.centuries") },
-    { to: "/statistics", label: t("nav.statistics") },
+    { to: "/explorar", label: t("nav.explore") },
+    { to: "/categorias", label: t("nav.tags") },
+    { to: "/ordenes", label: t("nav.orders") },
+    { to: "/siglos", label: t("nav.centuries") },
+    { to: "/estadisticas", label: t("nav.statistics") },
   ];
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!q.trim()) return;
     trackEvent("search_performed", { query: q.trim().slice(0, 60) });
-    navigate(`/explore?q=${encodeURIComponent(q.trim())}`);
+    navigate(`/explorar?q=${encodeURIComponent(q.trim())}`);
     setMenuOpen(false);
   };
 

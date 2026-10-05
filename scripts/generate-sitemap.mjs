@@ -11,29 +11,29 @@ const saints = JSON.parse(readFileSync(join(root, "src/data/saints.json"), "utf-
 
 const staticRoutes = [
   "/",
-  "/explore",
-  "/discover",
-  "/tags",
-  "/orders",
-  "/centuries",
-  "/history",
-  "/author",
-  "/statistics",
-  "/sources",
-  "/privacy",
+  "/explorar",
+  "/descubrir",
+  "/categorias",
+  "/ordenes",
+  "/siglos",
+  "/historia",
+  "/autor",
+  "/estadisticas",
+  "/fuentes",
+  "/privacidad",
 ];
 
 const tagRoutes = [
-  "/tag/martyrs", "/tag/doctors", "/tag/popes", "/tag/apostles", "/tag/evangelists",
-  "/tag/founders", "/tag/mystics", "/tag/missionaries", "/tag/virgins", "/tag/hermits",
-  "/tag/theologians",
+  "/categoria/martires", "/categoria/doctores", "/categoria/papas", "/categoria/apostoles", "/categoria/evangelistas",
+  "/categoria/fundadores", "/categoria/misticos", "/categoria/misioneros", "/categoria/virgenes", "/categoria/ermitanos",
+  "/categoria/teologos",
 ];
 
 const centuries = new Set();
 for (const s of saints) if (s.century) centuries.add(s.century);
-const centuryRoutes = [...centuries].sort((a, b) => a - b).map((c) => `/century/${c}`);
+const centuryRoutes = [...centuries].sort((a, b) => a - b).map((c) => `/siglo/${c}`);
 
-const saintRoutes = saints.map((s) => `/saint/${s.id}`);
+const saintRoutes = saints.map((s) => `/santo/${s.id}`);
 
 const urls = [...staticRoutes, ...tagRoutes, ...centuryRoutes, ...saintRoutes]
   .map((p) => `  <url><loc>${SITE}${p}</loc><changefreq>monthly</changefreq></url>`)

@@ -6,7 +6,7 @@ export default function History() {
   const paras = [t("history.p1"), t("history.p2"), t("history.p3"), t("history.p4")];
   return (
     <>
-      <Seo title={t("history.title")} path="/history" />
+      <Seo title={t("history.title")} path="/historia" />
       <div className="mx-auto max-w-3xl px-4 sm:px-6 py-12">
         <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent-deep mb-3">
           {t("history.kicker")}

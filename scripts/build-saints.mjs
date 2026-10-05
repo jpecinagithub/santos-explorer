@@ -21,52 +21,52 @@ const slug = (s) =>
 // ------------------------------------------------------------- orders ----
 /** Canonical religious orders/families, matched in this order (specific first). */
 const ORDERS = [
-  { id: "franciscan", en: "Franciscans", es: "Franciscanos", kw: ["friars minor", "order of friars minor", "franciscan", "franciscano", "franciscana"] },
-  { id: "capuchin", en: "Capuchins", es: "Capuchinos", kw: ["capuchin", "capuchino", "capuchina"] },
-  { id: "poor-clares", en: "Poor Clares", es: "Clarisas", kw: ["poor clare", "order of saint clare", "clarisa"] },
-  { id: "dominican", en: "Dominicans", es: "Dominicos", kw: ["order of preachers", "dominican", "dominico", "dominica", "predicadores"] },
-  { id: "jesuit", en: "Jesuits", es: "Jesuitas", kw: ["society of jesus", "jesuit", "jesuita", "compañía de jesús", "compania de jesus"] },
-  { id: "benedictine", en: "Benedictines", es: "Benedictinos", kw: ["order of saint benedict", "benedictine", "benedictino", "benedictina"] },
-  { id: "cistercian", en: "Cistercians", es: "Cistercienses", kw: ["cistercian", "cisterciense"] },
-  { id: "trappist", en: "Trappists", es: "Trapenses", kw: ["trappist", "trapense"] },
-  { id: "carmelite", en: "Carmelites", es: "Carmelitas", kw: ["discalced carmelite", "carmelite", "carmelita", "descalzo", "descalza"] },
-  { id: "augustinian", en: "Augustinians", es: "Agustinos", kw: ["order of saint augustine", "augustinian", "agustino", "agustina"] },
-  { id: "mercedarian", en: "Mercedarians", es: "Mercedarios", kw: ["mercedarian", "order of mercy", "mercedario", "mercedaria", "merced"] },
-  { id: "trinitarian", en: "Trinitarians", es: "Trinitarios", kw: ["trinitarian", "order of the holy trinity", "trinitario", "trinitaria"] },
-  { id: "servite", en: "Servites", es: "Servitas", kw: ["servite", "servants of mary", "servita"] },
-  { id: "carthusian", en: "Carthusians", es: "Cartujos", kw: ["carthusian", "cartujo", "cartuja"] },
-  { id: "camaldolese", en: "Camaldolese", es: "Camaldulenses", kw: ["camaldolese", "camaldulense"] },
-  { id: "vallumbrosan", en: "Vallumbrosans", es: "Valumbrosanos", kw: ["vallumbrosan"] },
-  { id: "olivetan", en: "Olivetans", es: "Olivetanos", kw: ["olivetan", "olivetano"] },
-  { id: "premonstratensian", en: "Premonstratensians", es: "Premonstratenses", kw: ["premonstratensian", "norbertine", "premonstratense"] },
-  { id: "hospitaller", en: "Hospitallers", es: "Hospitalarios", kw: ["knights hospitaller", "order of saint john", "hospitaller", "hospitalario"] },
-  { id: "theatine", en: "Theatines", es: "Teatinos", kw: ["theatine", "teatino", "teatina"] },
-  { id: "barnabite", en: "Barnabites", es: "Barnabitas", kw: ["barnabite", "clerks regular of saint paul", "barnabita"] },
-  { id: "somascan", en: "Somaschi", es: "Somascos", kw: ["somascan", "somaschi", "somasco"] },
-  { id: "oratorian", en: "Oratorians", es: "Oratorianos", kw: ["congregation of the oratory", "oratorian", "oratoriano"] },
-  { id: "piarist", en: "Piarists", es: "Escolapios", kw: ["piarist", "scolopi", "escolapio", "escolapia", "poor clerics"] },
-  { id: "camillian", en: "Camillians", es: "Camilos", kw: ["camillian", "ministers of the sick", "camilo"] },
-  { id: "salesian", en: "Salesians", es: "Salesianos", kw: ["salesian", "salesiano", "salesiana"] },
-  { id: "redemptorist", en: "Redemptorists", es: "Redentoristas", kw: ["redemptorist", "redentorista"] },
-  { id: "passionist", en: "Passionists", es: "Pasionistas", kw: ["passionist", "pasionista"] },
-  { id: "vincentian", en: "Vincentians", es: "Vicentinos", kw: ["vincentian", "congregation of the mission", "daughters of charity", "lazarist", "vicentino", "vicentina", "paules"] },
-  { id: "missionaries-charity", en: "Missionaries of Charity", es: "Misioneras de la Caridad", kw: ["missionaries of charity", "missionary of charity", "misioneras de la caridad"] },
-  { id: "claretian", en: "Claretians", es: "Claretianos", kw: ["claretian", "sons of the immaculate heart", "claretiano"] },
-  { id: "marist", en: "Marists", es: "Maristas", kw: ["marist brother", "marist", "marista"] },
-  { id: "marianist", en: "Marianists", es: "Marianistas", kw: ["marianist", "marianista"] },
-  { id: "lasallian", en: "De La Salle Brothers", es: "Hermanos de La Salle", kw: ["de la salle", "lasallian", "christian brothers", "la salle"] },
-  { id: "oblates", en: "Oblates of Mary Immaculate", es: "Oblatos de María Inmaculada", kw: ["oblates of mary immaculate", "oblato"] },
-  { id: "divine-word", en: "Society of the Divine Word", es: "Misioneros del Verbo Divino", kw: ["society of the divine word", "divine word", "verbo divino"] },
-  { id: "comboni", en: "Comboni Missionaries", es: "Combonianos", kw: ["comboni", "comboniano"] },
-  { id: "spiritan", en: "Spiritans", es: "Espiritanos", kw: ["spiritan", "congregation of the holy spirit", "espiritano"] },
-  { id: "white-fathers", en: "Missionaries of Africa", es: "Misioneros de África", kw: ["white father", "missionaries of africa", "padres blancos"] },
-  { id: "pallottine", en: "Pallottines", es: "Palotinos", kw: ["pallottine", "palotino", "palotina"] },
-  { id: "ursulines", en: "Ursulines", es: "Ursulinas", kw: ["ursuline", "ursulina"] },
-  { id: "visitation", en: "Order of the Visitation", es: "Visitandinas", kw: ["order of the visitation", "visitandine"] },
-  { id: "bridgettine", en: "Bridgettines", es: "Brígidas", kw: ["bridgettine", "brigidine", "order of the holy saviour", "brígida"] },
-  { id: "sisters-mercy", en: "Sisters of Mercy", es: "Hermanas de la Misericordia", kw: ["sisters of mercy", "sister of mercy"] },
-  { id: "sisters-charity", en: "Sisters of Charity", es: "Hermanas de la Caridad", kw: ["sisters of charity"] },
-  { id: "little-sisters-poor", en: "Little Sisters of the Poor", es: "Hermanitas de los Pobres", kw: ["little sisters of the poor"] },
+  { id: "franciscanos", es: "Franciscanos", kw: ["friars minor", "order of friars minor", "franciscan", "franciscano", "franciscana"] },
+  { id: "capuchinos", es: "Capuchinos", kw: ["capuchin", "capuchino", "capuchina"] },
+  { id: "clarisas", es: "Clarisas", kw: ["poor clare", "order of saint clare", "clarisa"] },
+  { id: "dominicos", es: "Dominicos", kw: ["order of preachers", "dominican", "dominico", "dominica", "predicadores"] },
+  { id: "jesuitas", es: "Jesuitas", kw: ["society of jesus", "jesuit", "jesuita", "compañía de jesús", "compania de jesus"] },
+  { id: "benedictinos", es: "Benedictinos", kw: ["order of saint benedict", "benedictine", "benedictino", "benedictina"] },
+  { id: "cistercienses", es: "Cistercienses", kw: ["cistercian", "cisterciense"] },
+  { id: "trapenses", es: "Trapenses", kw: ["trappist", "trapense"] },
+  { id: "carmelitas", es: "Carmelitas", kw: ["discalced carmelite", "carmelite", "carmelita", "descalzo", "descalza"] },
+  { id: "agustinos", es: "Agustinos", kw: ["order of saint augustine", "augustinian", "agustino", "agustina"] },
+  { id: "mercedarios", es: "Mercedarios", kw: ["mercedarian", "order of mercy", "mercedario", "mercedaria", "merced"] },
+  { id: "trinitarios", es: "Trinitarios", kw: ["trinitarian", "order of the holy trinity", "trinitario", "trinitaria"] },
+  { id: "servitas", es: "Servitas", kw: ["servite", "servants of mary", "servita"] },
+  { id: "cartujos", es: "Cartujos", kw: ["carthusian", "cartujo", "cartuja"] },
+  { id: "camaldulenses", es: "Camaldulenses", kw: ["camaldolese", "camaldulense"] },
+  { id: "valumbrosanos", es: "Valumbrosanos", kw: ["vallumbrosan"] },
+  { id: "olivetanos", es: "Olivetanos", kw: ["olivetan", "olivetano"] },
+  { id: "premonstratenses", es: "Premonstratenses", kw: ["premonstratensian", "norbertine", "premonstratense"] },
+  { id: "hospitalarios", es: "Hospitalarios", kw: ["knights hospitaller", "order of saint john", "hospitaller", "hospitalario"] },
+  { id: "teatinos", es: "Teatinos", kw: ["theatine", "teatino", "teatina"] },
+  { id: "barnabitas", es: "Barnabitas", kw: ["barnabite", "clerks regular of saint paul", "barnabita"] },
+  { id: "somascos", es: "Somascos", kw: ["somascan", "somaschi", "somasco"] },
+  { id: "oratorianos", es: "Oratorianos", kw: ["congregation of the oratory", "oratorian", "oratoriano"] },
+  { id: "escolapios", es: "Escolapios", kw: ["piarist", "scolopi", "escolapio", "escolapia", "poor clerics"] },
+  { id: "camilos", es: "Camilos", kw: ["camillian", "ministers of the sick", "camilo"] },
+  { id: "salesianos", es: "Salesianos", kw: ["salesian", "salesiano", "salesiana"] },
+  { id: "redentoristas", es: "Redentoristas", kw: ["redemptorist", "redentorista"] },
+  { id: "pasionistas", es: "Pasionistas", kw: ["passionist", "pasionista"] },
+  { id: "vicentinos", es: "Vicentinos", kw: ["vincentian", "congregation of the mission", "daughters of charity", "lazarist", "vicentino", "vicentina", "paules"] },
+  { id: "misioneras-de-la-caridad", es: "Misioneras de la Caridad", kw: ["missionaries of charity", "missionary of charity", "misioneras de la caridad"] },
+  { id: "claretianos", es: "Claretianos", kw: ["claretian", "sons of the immaculate heart", "claretiano"] },
+  { id: "maristas", es: "Maristas", kw: ["marist brother", "marist", "marista"] },
+  { id: "marianistas", es: "Marianistas", kw: ["marianist", "marianista"] },
+  { id: "hermanos-de-la-salle", es: "Hermanos de La Salle", kw: ["de la salle", "lasallian", "christian brothers", "la salle"] },
+  { id: "oblatos-de-maria-inmaculada", es: "Oblatos de María Inmaculada", kw: ["oblates of mary immaculate", "oblato"] },
+  { id: "misioneros-del-verbo-divino", es: "Misioneros del Verbo Divino", kw: ["society of the divine word", "divine word", "verbo divino"] },
+  { id: "combonianos", es: "Combonianos", kw: ["comboni", "comboniano"] },
+  { id: "espiritanos", es: "Espiritanos", kw: ["spiritan", "congregation of the holy spirit", "espiritano"] },
+  { id: "misioneros-de-africa", es: "Misioneros de África", kw: ["white father", "missionaries of africa", "padres blancos"] },
+  { id: "palotinos", es: "Palotinos", kw: ["pallottine", "palotino", "palotina"] },
+  { id: "ursulinas", es: "Ursulinas", kw: ["ursuline", "ursulina"] },
+  { id: "visitandinas", es: "Visitandinas", kw: ["order of the visitation", "visitandine"] },
+  { id: "brigidas", es: "Brígidas", kw: ["bridgettine", "brigidine", "order of the holy saviour", "brígida"] },
+  { id: "hermanas-de-la-misericordia", es: "Hermanas de la Misericordia", kw: ["sisters of mercy", "sister of mercy"] },
+  { id: "hermanas-de-la-caridad", es: "Hermanas de la Caridad", kw: ["sisters of charity"] },
+  { id: "hermanitas-de-los-pobres", es: "Hermanitas de los Pobres", kw: ["little sisters of the poor"] },
 ];
 
 function findOrder(text) {
@@ -388,11 +388,15 @@ function build() {
 
   const saints = [];
   const seenSlugs = new Set();
-  const stats = { dropped: 0, noDates: 0, noCountry: 0, noOrder: 0, noSpanish: 0 };
+  const seenSlugsEs = new Set();
+  const stats = { dropped: 0, noDates: 0, noCountry: 0, noOrder: 0, noSpanish: 0, blocked: 0 };
+  // Artefactos conocidos que no son santos (restos del parseo de la lista original).
+  const BLOCKLIST = new Set(["university of toronto press", "isbn"]);
 
   for (const key of Object.keys(pages)) {
     const p = pages[key];
     if (p.missing || p.disamb) { stats.dropped++; continue; }
+    if (BLOCKLIST.has(norm(p.title))) { stats.blocked++; continue; }
     const extract = (p.extract || "").trim();
     if (extract.length < 40 || /may refer to:/i.test(extract)) { stats.dropped++; continue; }
 
@@ -457,22 +461,22 @@ function build() {
     const t = norm(extract);
     const canonized = /\bcanoniz/.test(t);
     const beatified = /\bbeatif/.test(t);
-    const status = canonized || !beatified ? "saint" : "blessed";
+    const status = canonized || !beatified ? "santo" : "beato";
 
     // tags
     const n = norm(p.title);
     const tags = [];
-    if (/\bmartyr/.test(t)) tags.push("martyr");
+    if (/\bmartyr/.test(t)) tags.push("martir");
     if (DOCTORS.includes(n)) tags.push("doctor");
-    if (APOSTLES.includes(n)) tags.push("apostle");
-    if (EVANGELISTS.includes(n)) tags.push("evangelist");
-    if (/^pope /.test(n) || /\bwas (elected |chosen as )?pope\b/.test(t) || /\bbecame pope\b/.test(t)) tags.push("pope");
-    if (/\bfound(er|ed|ress)\b/.test(t)) tags.push("founder");
-    if (/\bmystic/.test(t)) tags.push("mystic");
-    if (/\bmissionar/.test(t)) tags.push("missionary");
-    if (/\bvirgin\b(?!\s+mary)/.test(t)) tags.push("virgin");
-    if (/\bhermit\b|\banchorite\b|\brecluse\b/.test(t)) tags.push("hermit");
-    if (/\btheologian\b/.test(t)) tags.push("theologian");
+    if (APOSTLES.includes(n)) tags.push("apostol");
+    if (EVANGELISTS.includes(n)) tags.push("evangelista");
+    if (/^pope /.test(n) || /\bwas (elected |chosen as )?pope\b/.test(t) || /\bbecame pope\b/.test(t)) tags.push("papa");
+    if (/\bfound(er|ed|ress)\b/.test(t)) tags.push("fundador");
+    if (/\bmystic/.test(t)) tags.push("mistico");
+    if (/\bmissionar/.test(t)) tags.push("misionero");
+    if (/\bvirgin\b(?!\s+mary)/.test(t)) tags.push("virgen");
+    if (/\bhermit\b|\banchorite\b|\brecluse\b/.test(t)) tags.push("ermitano");
+    if (/\btheologian\b/.test(t)) tags.push("teologo");
 
     // roles
     const roles = [];
@@ -487,18 +491,25 @@ function build() {
     else if (/\babbot\b/.test(t)) roles.push("abbot");
     if (/\bking\b|\bqueen\b|\bprince\b|\bprincess\b|\bemperor\b|\bempress\b|\bduke\b|\bduchess\b/.test(t)) roles.push("royal");
 
-    let id = slug(p.title) || "saint";
+    // ID interno (inglés) para correlacionar con la caché de resúmenes/títulos.
+    let oldId = slug(p.title) || "saint";
     let k = 2;
-    while (seenSlugs.has(id)) id = `${slug(p.title)}-${k++}`;
-    seenSlugs.add(id);
+    while (seenSlugs.has(oldId)) oldId = `${slug(p.title)}-${k++}`;
+    seenSlugs.add(oldId);
 
     // La app es 100% en español: solo santos con resumen en español.
-    const summaryEs = esSummaries[id];
-    const titleEs = esTitles[id];
+    const summaryEs = esSummaries[oldId];
+    const titleEs = esTitles[oldId];
     if (!summaryEs || !titleEs) {
       stats.noSpanish++;
       continue;
     }
+
+    // ID público en español: slug del título del artículo en español.
+    let id = slug(titleEs) || "santo";
+    let j = 2;
+    while (seenSlugsEs.has(id)) id = `${slug(titleEs)}-${j++}`;
+    seenSlugsEs.add(id);
 
     saints.push({
       id,
@@ -517,7 +528,7 @@ function build() {
   }
 
   // meta
-  const byCountry = {}, byOrder = {}, byCentury = {}, byTag = {}, byStatus = { saint: 0, blessed: 0 };
+  const byCountry = {}, byOrder = {}, byCentury = {}, byTag = {}, byStatus = { santo: 0, beato: 0 };
   for (const s of saints) {
     byStatus[s.status] = (byStatus[s.status] || 0) + 1;
     if (s.country) {

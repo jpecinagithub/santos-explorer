@@ -13,7 +13,7 @@ export function CenturiesPage() {
   const centuries = allCenturies();
   return (
     <>
-      <Seo title={t("centuries.title")} path="/centuries" />
+      <Seo title={t("centuries.title")} path="/siglos" />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 py-10">
         <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-2">{t("centuries.title")}</h1>
         <p className="text-muted mb-8">{t("centuries.subtitle")}</p>
@@ -21,7 +21,7 @@ export function CenturiesPage() {
           {centuries.map((c) => (
             <Link
               key={c.century}
-              to={`/century/${c.century}`}
+              to={`/siglo/${c.century}`}
               className="group bg-white border border-line rounded-2xl p-6 hover:shadow-lg hover:border-accent/50 hover:-translate-y-0.5 transition-all"
             >
               <h2 className="text-xl font-bold group-hover:text-accent-deep transition-colors">
@@ -52,7 +52,7 @@ export function CenturyPage() {
     return (
       <div className="mx-auto max-w-3xl px-4 py-24 text-center">
         <h1 className="text-3xl font-bold mb-4">{t("common.notFound")}</h1>
-        <Link to="/centuries" className="px-6 py-2.5 rounded-full bg-night text-white text-sm font-medium">
+        <Link to="/siglos" className="px-6 py-2.5 rounded-full bg-night text-white text-sm font-medium">
           {t("centuries.title")}
         </Link>
       </div>
@@ -63,7 +63,7 @@ export function CenturyPage() {
 
   return (
     <>
-      <Seo title={centuryLabel(century)} path={`/century/${century}`} />
+      <Seo title={centuryLabel(century)} path={`/siglo/${century}`} />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 py-10">
         <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent-deep mb-2">{t("centuries.title")}</p>
         <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-2">{centuryLabel(century)}</h1>

@@ -109,7 +109,7 @@ export function WikiReaderBody({ saint }: { saint: Saint }) {
 export function SaintHeader({ saint, compact }: { saint: Saint; compact?: boolean }) {
   const { t } = useTranslation();
   const dates = yearRange(saint);
-  const statusLabel = saint.status === "blessed" ? t("card.blessed") : t("card.saint");
+  const statusLabel = saint.status === "beato" ? t("card.blessed") : t("card.saint");
 
   const facts: { label: string; value: string }[] = [];
   if (dates) facts.push({ label: t("saint.dates"), value: dates });
@@ -141,7 +141,7 @@ export function SaintHeader({ saint, compact }: { saint: Saint; compact?: boolea
             {saint.tags.map((tag) => (
               <Link
                 key={tag}
-                to={`/tag/${TAG_SLUG[tag]}`}
+                to={`/categoria/${TAG_SLUG[tag]}`}
                 className="text-xs px-3 py-1 rounded-full bg-accent-soft text-accent-deep font-medium hover:bg-accent hover:text-white transition-colors"
               >
                 {t(`tags.${tag}`)}
@@ -187,7 +187,7 @@ export default function ReaderModal({
           </span>
           <div className="flex items-center gap-2">
             <Link
-              to={`/saint/${saint.id}`}
+              to={`/santo/${saint.id}`}
               className="text-xs font-medium text-accent-deep hover:underline px-2 py-1"
             >
               {t("common.readMore")}

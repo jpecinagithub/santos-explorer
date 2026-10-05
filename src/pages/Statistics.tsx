@@ -39,8 +39,8 @@ export default function Statistics() {
   const byTag = TAGS.map((tag) => ({ name: t(`tags.${tag}`), n: tagCount(tag) }))
     .filter((x) => x.n > 0)
     .sort((a, b) => b.n - a.n);
-  const nSaints = saints.filter((s) => s.status === "saint").length;
-  const nBlessed = saints.filter((s) => s.status === "blessed").length;
+  const nSaints = saints.filter((s) => s.status === "santo").length;
+  const nBlessed = saints.filter((s) => s.status === "beato").length;
   const statusData = [
     { name: t("explore.statusSaint"), value: nSaints },
     { name: t("explore.statusBlessed"), value: nBlessed },
@@ -55,7 +55,7 @@ export default function Statistics() {
 
   return (
     <>
-      <Seo title={t("statistics.title")} path="/statistics" />
+      <Seo title={t("statistics.title")} path="/estadisticas" />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 py-10">
         <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-2">{t("statistics.title")}</h1>
         <p className="text-muted mb-8">{t("statistics.subtitle")}</p>
