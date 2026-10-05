@@ -27,12 +27,12 @@ export function SaintAvatar({ saint, size = "md" }: { saint: Saint; size?: "sm" 
   );
 }
 
-export function saintSubtitle(s: Saint, lang: "en" | "es"): string {
+export function saintSubtitle(s: Saint): string {
   const bits: string[] = [];
-  if (s.country) bits.push(lang === "es" ? s.country.es : s.country.en);
-  const ord = orderName(s.order, lang);
+  if (s.country) bits.push(s.country.n);
+  const ord = orderName(s.order);
   if (ord) bits.push(ord);
-  if (s.century) bits.push(centuryLabel(s.century, lang));
+  if (s.century) bits.push(centuryLabel(s.century));
   return bits.join(" · ");
 }
 
@@ -43,8 +43,7 @@ export default function SaintCard({
   saint: Saint;
   onOpen?: (s: Saint) => void;
 }) {
-  const { t, i18n } = useTranslation();
-  const lang = i18n.language === "es" ? "es" : "en";
+  const { t } = useTranslation();
   const dates = yearRange(saint);
   const statusLabel = saint.status === "blessed" ? t("card.blessed") : t("card.saint");
 
@@ -60,12 +59,12 @@ export default function SaintCard({
             {statusLabel}
             {dates ? ` · ${dates}` : ""}
           </p>
-          <p className="text-xs text-muted mt-0.5">{saintSubtitle(saint, lang)}</p>
+          <p className="text-xs text-muted mt-0.5">{saintSubtitle(saint)}</p>
         </div>
       </div>
-      {(lang === "es" ? saint.summaryEs || saint.summary : saint.summary) && (
+      {saint.summary && (
         <p className="text-sm text-ink-soft leading-relaxed mt-3 line-clamp-3">
-          {lang === "es" ? saint.summaryEs || saint.summary : saint.summary}
+          {saint.summary}
         </p>
       )}
       <span className="inline-flex items-center gap-1.5 text-sm font-medium text-accent-deep mt-4 group-hover:gap-2.5 transition-all">

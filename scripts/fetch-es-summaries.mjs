@@ -133,3 +133,5 @@ console.log(`\nSpanish summaries fetched: ${Object.keys(summaries).length}`);
 
 writeFileSync(join(CACHE, "es-summaries.json"), JSON.stringify(summaries), "utf8");
 console.log("wrote scripts/.cache/es-summaries.json");
+writeFileSync(join(CACHE, "es-titles.json"), JSON.stringify(Object.fromEntries(idToEsTitle)), "utf8");
+console.log("wrote scripts/.cache/es-titles.json");

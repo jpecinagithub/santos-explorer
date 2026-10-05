@@ -8,8 +8,7 @@ import { allOrders, saintsByOrder, orderName } from "../lib/saints";
 import { trackEvent } from "../lib/analytics";
 
 export function OrdersPage() {
-  const { t, i18n } = useTranslation();
-  const lang = i18n.language === "es" ? "es" : "en";
+  const { t } = useTranslation();
   const orders = allOrders();
   return (
     <>
@@ -25,7 +24,7 @@ export function OrdersPage() {
               className="group bg-white border border-line rounded-2xl p-6 hover:shadow-lg hover:border-accent/50 hover:-translate-y-0.5 transition-all"
             >
               <h2 className="text-xl font-bold group-hover:text-accent-deep transition-colors">
-                {lang === "es" ? o.es : o.en}
+                {o.es}
               </h2>
               <p className="text-sm font-semibold text-accent-deep mt-2">
                 {o.n === 1 ? t("orders.member", { n: o.n }) : t("orders.members", { n: o.n })}
@@ -39,8 +38,7 @@ export function OrdersPage() {
 }
 
 export function OrderPage() {
-  const { t, i18n } = useTranslation();
-  const lang = i18n.language === "es" ? "es" : "en";
+  const { t } = useTranslation();
   const { orderId } = useParams<{ orderId: string }>();
   const { openSaint } = useReader();
 
@@ -61,7 +59,7 @@ export function OrderPage() {
   }
 
   const list = saintsByOrder(order.id);
-  const name = orderName(order.id, lang) ?? order.en;
+  const name = orderName(order.id) ?? order.es;
 
   return (
     <>

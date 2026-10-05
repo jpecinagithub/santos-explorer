@@ -11,13 +11,13 @@ interface Props {
 const SITE = "https://vidas-de-santos.app";
 
 export default function Seo({ title, description, path = "/", image }: Props) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const fullTitle = title ? `${title} · Vidas de Santos` : t("meta.title");
   const desc = description ?? t("meta.description");
   const url = `${SITE}${path}`;
   return (
     <Helmet>
-      <html lang={i18n.language === "es" ? "es" : "en"} />
+      <html lang="es" />
       <title>{fullTitle}</title>
       <meta name="description" content={desc} />
       <link rel="canonical" href={url} />

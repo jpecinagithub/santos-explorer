@@ -1,7 +1,7 @@
 import Fuse from "fuse.js";
 import { saints, orderName } from "./saints";
 import type { ExploreFilters, Saint, SaintTag } from "../types/saint";
-import { TAGS } from "../types/saint";
+import { TAGS, centuryLabel } from "../types/saint";
 
 /** Normalize for diacritic-insensitive matching. */
 export function norm(s: string): string {
@@ -19,20 +19,16 @@ interface SearchDoc extends Saint {
 
 const docs: SearchDoc[] = saints.map((s) => ({
   ...s,
-  nameNorm: norm(s.name + " " + (s.nameEs ?? "")),
+  nameNorm: norm(s.name),
   blob: norm(
     [
-      s.nameEs ?? "",
       s.tags.join(" "),
       s.roles.join(" "),
-      s.country?.en ?? "",
-      s.country?.es ?? "",
-      orderName(s.order, "en") ?? "",
-      orderName(s.order, "es") ?? "",
-      s.patron ?? "",
+      s.country?.n ?? "",
+      orderName(s.order) ?? "",
       s.summary,
       s.status,
-      s.sex === "f" ? "woman female" : s.sex === "m" ? "man male" : "",
+      s.sex === "f" ? "mujer femenina" : s.sex === "m" ? "hombre masculino" : "",
     ].join(" "),
   ),
 }));
@@ -49,18 +45,19 @@ const fuse = new Fuse(docs, {
 });
 
 // ---------------------------------------------------------------- parsing --
+// Palabras en español para el parseo de consultas ("mártires siglo III", "beato franciscano").
 const TAG_WORDS: { words: string[]; tag: SaintTag }[] = [
-  { words: ["martyr", "martir", "mártir", "martyrs", "martires", "mártires"], tag: "martyr" },
-  { words: ["doctor", "doctores", "doctors"], tag: "doctor" },
-  { words: ["pope", "papa", "popes", "papas"], tag: "pope" },
-  { words: ["apostle", "apostol", "apóstol", "apostles", "apostoles", "apóstoles"], tag: "apostle" },
-  { words: ["evangelist", "evangelista", "evangelists"], tag: "evangelist" },
-  { words: ["founder", "fundador", "fundadora", "founders", "fundadores", "foundress"], tag: "founder" },
-  { words: ["mystic", "mistico", "místico", "mystics", "misticos", "místicos"], tag: "mystic" },
-  { words: ["missionary", "misionero", "misionera", "missionaries", "misioneros"], tag: "missionary" },
-  { words: ["virgin", "virgen", "virgins", "virgenes", "vírgenes"], tag: "virgin" },
-  { words: ["hermit", "ermitaño", "ermitano", "hermits", "anchorite", "anacoreta"], tag: "hermit" },
-  { words: ["theologian", "teologo", "teólogo", "theologians"], tag: "theologian" },
+  { words: ["martir", "mártir", "martires", "mártires"], tag: "martyr" },
+  { words: ["doctor", "doctores", "doctora", "doctoras"], tag: "doctor" },
+  { words: ["papa", "papas"], tag: "pope" },
+  { words: ["apostol", "apóstol", "apostoles", "apóstoles"], tag: "apostle" },
+  { words: ["evangelista", "evangelistas"], tag: "evangelist" },
+  { words: ["fundador", "fundadora", "fundadores", "fundadoras"], tag: "founder" },
+  { words: ["mistico", "místico", "mistica", "mística", "misticos", "místicos"], tag: "mystic" },
+  { words: ["misionero", "misionera", "misioneros", "misioneras"], tag: "missionary" },
+  { words: ["virgen", "virgenes", "vírgenes"], tag: "virgin" },
+  { words: ["ermitaño", "ermitano", "ermitaños", "anacoreta", "anacoretas"], tag: "hermit" },
+  { words: ["teologo", "teólogo", "teologos", "teólogos"], tag: "theologian" },
 ];
 
 const ROMAN: Record<string, number> = {
@@ -83,27 +80,19 @@ export function parseQuery(q: string): ParsedQuery {
   let tag: SaintTag | null = null;
   let status: "saint" | "blessed" | null = null;
 
-  // Century: "siglo xiii", "s. xiii", "13th century", "1300s", "s xiii"
+  // Siglo: "siglo xiii", "s. xiii", "s xiii"
   const sigloMatch = n.match(/\b(?:siglo|s\.?)\s*([ivxl]+|\d{1,2})\b/);
   if (sigloMatch) {
     const raw = sigloMatch[1];
     century = /^\d+$/.test(raw) ? parseInt(raw, 10) : (ROMAN[raw] ?? null);
     if (century && century >= 1 && century <= 21) text = text.replace(sigloMatch[0], " ");
     else century = null;
-  } else {
-    const centMatch = n.match(/\b(\d{1,2})(?:st|nd|rd|th)?\s*century\b/) ?? n.match(/\b(1\d|20)\d\ds\b/);
-    if (centMatch) {
-      const raw = centMatch[1];
-      century = raw.length >= 3 ? Math.floor(parseInt(raw, 10) / 100) + 1 : parseInt(raw, 10);
-      if (century >= 1 && century <= 21) text = text.replace(centMatch[0], " ");
-      else century = null;
-    }
   }
 
-  // Status: blessed / beato
-  if (/\bbeat[oa]s?\b/.test(text) || /\bblessed\b/.test(text)) {
+  // Estado: beato/a/os/as
+  if (/\bbeat[oa]s?\b/.test(text)) {
     status = "blessed";
-    text = text.replace(/\bbeat[oa]s?\b/g, " ").replace(/\bblessed\b/g, " ");
+    text = text.replace(/\bbeat[oa]s?\b/g, " ");
   }
 
   for (const tw of TAG_WORDS) {
@@ -177,6 +166,21 @@ export interface Suggestion {
   query?: string;
 }
 
+/** Nombres de categoría en español para las pistas del autocompletado. */
+const TAG_ES: Record<SaintTag, string> = {
+  martyr: "mártires",
+  doctor: "doctores",
+  pope: "papas",
+  apostle: "apóstoles",
+  evangelist: "evangelistas",
+  founder: "fundadores",
+  mystic: "místicos",
+  missionary: "misioneros",
+  virgin: "vírgenes",
+  hermit: "ermitaños",
+  theologian: "teólogos",
+};
+
 /** Fast suggestions for the command-style autocomplete panel. */
 export function suggest(query: string, limit = 8): Suggestion[] {
   const qn = norm(query);
@@ -194,22 +198,18 @@ export function suggest(query: string, limit = 8): Suggestion[] {
   const nameHits = [...starts, ...contains].slice(0, 5);
   for (const s of nameHits) {
     const bits: string[] = [];
-    if (s.country) bits.push(s.country.en);
-    const ord = orderName(s.order, "en");
+    if (s.country) bits.push(s.country.n);
+    const ord = orderName(s.order);
     if (ord) bits.push(ord);
-    if (s.century) bits.push(`${s.century}th c.`);
+    if (s.century) bits.push(centuryLabel(s.century));
     out.push({ kind: "saint", label: s.name, sub: bits.join(" · "), saint: s });
   }
 
-  // Topic matches from tags / orders / patronage.
+  // Coincidencias por tema: categorías y órdenes (en español).
   const seen = new Set<string>();
   const topics: string[] = [];
   for (const s of saints) {
-    const cand = [
-      ...(s.tags as string[]),
-      orderName(s.order, "en") ?? "",
-      s.patron ?? "",
-    ].filter(Boolean);
+    const cand = [...s.tags.map((tg) => TAG_ES[tg]), orderName(s.order) ?? ""].filter(Boolean);
     for (const k of cand) {
       const kn = norm(k);
       if (kn.includes(qn) && !seen.has(kn) && kn.length > 2) {
@@ -225,13 +225,13 @@ export function suggest(query: string, limit = 8): Suggestion[] {
     out.push({ kind: "topic", label: k, query: k });
   }
 
-  // Parsed structured hint (e.g. "martyrs siglo iii").
+  // Pista estructurada (p. ej. "mártires siglo iii").
   const parsed = parseQuery(query);
   if ((parsed.century || parsed.tag || parsed.status) && out.length < limit) {
     const bits: string[] = [];
-    if (parsed.tag) bits.push(parsed.tag);
-    if (parsed.century) bits.push(`${parsed.century}th c.`);
-    if (parsed.status) bits.push(parsed.status);
+    if (parsed.tag) bits.push(TAG_ES[parsed.tag]);
+    if (parsed.century) bits.push(centuryLabel(parsed.century));
+    if (parsed.status) bits.push("beatos");
     out.push({ kind: "hint", label: bits.join(" · "), query });
   }
 

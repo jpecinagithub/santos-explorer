@@ -47,7 +47,7 @@ try {
   check("home loads", await page.locator("h1").count() > 0);
   check("hero search present", await page.locator('input[role="combobox"]').count() > 0);
   const statText = await page.locator("section").first().textContent();
-  check("stats mention saints", /2,197|2197/.test(statText || ""), (statText || "").slice(0, 60));
+  check("stats mention saints", /1[.,]692/.test(statText || ""), (statText || "").slice(0, 60));
 
   // 2. Autocomplete
   await page.locator('input[role="combobox"]').first().fill("Teresa");
@@ -56,7 +56,7 @@ try {
   check("autocomplete suggestions", sugg > 0, `${sugg} options`);
 
   // 3. Explore with query
-  await page.goto(base + "/explore?q=martyr", { waitUntil: "networkidle" });
+  await page.goto(base + "/explore?q=martires", { waitUntil: "networkidle" });
   await page.waitForTimeout(800);
   const cards = await page.locator("main a[href^='/saint/'], main button").count();
   check("explore results render", cards > 3, `${cards} cards/buttons`);
@@ -65,17 +65,17 @@ try {
   await page.goto(base + "/saint/francis-of-assisi", { waitUntil: "networkidle" });
   await page.waitForTimeout(500);
   const h1 = await page.locator("h1").first().textContent();
-  check("saint page title", (h1 || "").includes("Francis of Assisi"), h1 || "");
-  check("quick facts present", (await page.locator("main").textContent() || "").includes("Italy"));
+  check("saint page title", (h1 || "").includes("Francisco de As\u00eds"), h1 || "");
+  check("quick facts present", (await page.locator("main").textContent() || "").includes("Italia"));
 
   // 5. Wiki reader states (sandbox has no external net → expect graceful error state)
   await page.waitForTimeout(2500);
   const mainText = await page.locator("main").textContent();
-  const graceful = /Wikipedia could not be reached|wikipedia|Biography/i.test(mainText || "");
+  const graceful = /wikipedia|biograf\u00eda/i.test(mainText || "");
   check("wiki reader degrades gracefully offline", graceful);
 
   // 6. Taxonomy pages
-  for (const [path, marker] of [["/tags", "Martyrs"], ["/orders", "Franciscans"], ["/centuries", "Siglo"], ["/statistics", "Statistics"], ["/discover", "Discover"]]) {
+  for (const [path, marker] of [["/tags", "M\u00e1rtires"], ["/orders", "Franciscanos"], ["/centuries", "Siglo"], ["/statistics", "Estad\u00edsticas"], ["/discover", "Descubrir"]]) {
     await page.goto(base + path, { waitUntil: "networkidle" });
     await page.waitForTimeout(400);
     const t = await page.locator("main").textContent();
@@ -86,17 +86,15 @@ try {
   await page.goto(base + "/tag/doctors", { waitUntil: "networkidle" });
   await page.waitForTimeout(500);
   const tagText = await page.locator("main").textContent();
-  check("tag page lists doctors", /Thomas Aquinas|Augustine/i.test(tagText || ""));
+  check("tag page lists doctors", /Tom\u00e1s de Aquino|Agust\u00edn/i.test(tagText || ""));
 
-  // 8. Spanish
+  // 8. Spanish-only: no language switcher, UI in Spanish by default
   await page.goto(base + "/", { waitUntil: "networkidle" });
-  await page.locator('button[aria-pressed]').first().waitFor({ timeout: 5000 }).catch(() => {});
-  const langBtns = page.locator('header [role="group"] button');
-  await langBtns.nth(1).click(); // ES
-  await page.waitForTimeout(800);
+  await page.waitForTimeout(500);
   const esH1 = await page.locator("h1").first().textContent();
-  check("spanish UI", /santos|búsqueda/i.test(esH1 || ""), esH1 || "");
-  await langBtns.nth(0).click(); // back to EN
+  check("spanish UI by default", /santos|b\u00fasqueda/i.test(esH1 || ""), esH1 || "");
+  check("no language switcher", await page.locator('header [role="group"]').count() === 0);
+  check("no english markers", !/\b(Saints|Discover|Search saints)\b/.test(await page.locator("main").textContent() || ""));
 
   // 9. Mobile viewport
   await page.setViewportSize({ width: 375, height: 800 });
@@ -104,7 +102,7 @@ try {
   await page.waitForTimeout(500);
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   check("mobile no horizontal overflow (home)", overflow <= 1, `overflow=${overflow}px`);
-  await page.goto(base + "/explore?q=francis", { waitUntil: "networkidle" });
+  await page.goto(base + "/explore?q=francisco", { waitUntil: "networkidle" });
   await page.waitForTimeout(500);
   const overflow2 = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   check("mobile no horizontal overflow (explore)", overflow2 <= 1, `overflow=${overflow2}px`);

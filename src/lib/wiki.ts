@@ -1,5 +1,8 @@
 import DOMPurify from "dompurify";
 
+// Vidas de Santos es 100% en español: las biografías se sirven siempre
+// desde Wikipedia en español.
+
 export interface WikiContent {
   title: string;
   description?: string;
@@ -7,8 +10,6 @@ export interface WikiContent {
   html: string;
   thumbnail?: string;
   pageUrl: string;
-  lang: "en" | "es";
-  fallbackFromEs: boolean;
 }
 
 interface CacheEntry {
@@ -18,18 +19,19 @@ interface CacheEntry {
 
 const TTL = 24 * 60 * 60 * 1000; // 24 hours
 const UA = "SantosExplorer/1.0 (educational saint discovery; contact via site footer)";
+const WIKI = "https://es.wikipedia.org";
 
-function cacheKey(lang: string, title: string): string {
-  return `santoswiki:v1:${lang}:${title}`;
+function cacheKey(title: string): string {
+  return `santoswiki:v1:es:${title}`;
 }
 
-function readCache(lang: string, title: string): WikiContent | null | undefined {
+function readCache(title: string): WikiContent | null | undefined {
   try {
-    const raw = localStorage.getItem(cacheKey(lang, title));
+    const raw = localStorage.getItem(cacheKey(title));
     if (!raw) return undefined;
     const entry = JSON.parse(raw) as CacheEntry;
     if (Date.now() - entry.ts > TTL) {
-      localStorage.removeItem(cacheKey(lang, title));
+      localStorage.removeItem(cacheKey(title));
       return undefined;
     }
     return entry.data;
@@ -38,17 +40,17 @@ function readCache(lang: string, title: string): WikiContent | null | undefined 
   }
 }
 
-function writeCache(lang: string, title: string, data: WikiContent | null): void {
+function writeCache(title: string, data: WikiContent | null): void {
   try {
     const entry: CacheEntry = { ts: Date.now(), data };
-    localStorage.setItem(cacheKey(lang, title), JSON.stringify(entry));
+    localStorage.setItem(cacheKey(title), JSON.stringify(entry));
   } catch {
     /* quota exceeded — skip caching silently */
   }
 }
 
-async function fetchSummary(lang: "en" | "es", title: string) {
-  const url = `https://${lang}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`;
+async function fetchSummary(title: string) {
+  const url = `${WIKI}/api/rest_v1/page/summary/${encodeURIComponent(title)}`;
   const res = await fetch(url, { headers: { "User-Agent": UA } });
   if (res.status === 404) return null;
   if (!res.ok) throw new Error(`summary:${res.status}`);
@@ -57,7 +59,7 @@ async function fetchSummary(lang: "en" | "es", title: string) {
   return { disambiguation: false as const, j };
 }
 
-async function fetchHtml(lang: "en" | "es", title: string): Promise<string | null> {
+async function fetchHtml(title: string): Promise<string | null> {
   const params = new URLSearchParams({
     action: "parse",
     page: title,
@@ -67,7 +69,7 @@ async function fetchHtml(lang: "en" | "es", title: string): Promise<string | nul
     redirects: "1",
     disablelimitreport: "1",
   });
-  const res = await fetch(`https://${lang}.wikipedia.org/w/api.php?${params}`, {
+  const res = await fetch(`${WIKI}/w/api.php?${params}`, {
     headers: { "User-Agent": UA },
   });
   if (!res.ok) throw new Error(`parse:${res.status}`);
@@ -75,24 +77,7 @@ async function fetchHtml(lang: "en" | "es", title: string): Promise<string | nul
   return j?.parse?.text?.["*"] ?? null;
 }
 
-async function searchTitle(lang: "en" | "es", name: string): Promise<string | null> {
-  const params = new URLSearchParams({
-    action: "query",
-    list: "search",
-    srsearch: name,
-    srlimit: "1",
-    format: "json",
-    origin: "*",
-  });
-  const res = await fetch(`https://${lang}.wikipedia.org/w/api.php?${params}`, {
-    headers: { "User-Agent": UA },
-  });
-  if (!res.ok) return null;
-  const j = await res.json();
-  return j?.query?.search?.[0]?.title ?? null;
-}
-
-function sanitize(rawHtml: string, lang: "en" | "es"): string {
+function sanitize(rawHtml: string): string {
   const clean = DOMPurify.sanitize(rawHtml, {
     FORBID_TAGS: ["style", "script", "iframe", "form", "input", "button"],
     FORBID_ATTR: ["onclick", "onload", "onerror"],
@@ -107,7 +92,7 @@ function sanitize(rawHtml: string, lang: "en" | "es"): string {
   root.querySelectorAll("a[href]").forEach((a) => {
     const href = a.getAttribute("href") || "";
     let abs: string | null = null;
-    if (href.startsWith("/wiki/")) abs = `https://${lang}.wikipedia.org${href}`;
+    if (href.startsWith("/wiki/")) abs = `${WIKI}${href}`;
     else if (href.startsWith("//")) abs = `https:${href}`;
     else if (/^https?:\/\//.test(href)) abs = href;
     if (abs) {
@@ -130,68 +115,39 @@ function sanitize(rawHtml: string, lang: "en" | "es"): string {
 }
 
 /**
- * Load a saint's Wikipedia article. Tries `lang` first; when Spanish is
- * requested and the article does not exist there, falls back to English.
- * Results are cached in localStorage for 24h.
+ * Carga el artículo de Wikipedia en español de un santo.
+ * El resultado se cachea en localStorage durante 24h.
  */
-export async function loadWikiArticle(
-  name: string,
-  wikiTitle: string | undefined,
-  lang: "en" | "es",
-): Promise<WikiContent> {
-  const langs: ("en" | "es")[] = lang === "es" ? ["es", "en"] : ["en"];
-  let fallbackFromEs = false;
+export async function loadWikiArticle(name: string, wikiTitle: string | undefined): Promise<WikiContent> {
+  const title = wikiTitle ?? name;
 
-  for (const l of langs) {
-    let title = wikiTitle;
-    if (!title) {
-      const cachedSearch = readCache(l, `__search__${name}`);
-      if (cachedSearch === null) continue;
-      title = (await searchTitle(l, name)) ?? undefined;
-      writeCache(l, `__search__${name}`, title ? ({ ...({} as WikiContent), title } as WikiContent) : null);
-      if (!title) continue;
-    }
-
-    const cached = readCache(l, title);
-    if (cached !== undefined) {
-      if (cached === null) {
-        if (l === "es") { fallbackFromEs = true; continue; }
-        throw new Error("missing");
-      }
-      return { ...cached, fallbackFromEs: fallbackFromEs || cached.fallbackFromEs };
-    }
-
-    const summary = await fetchSummary(l, title);
-    if (!summary) {
-      writeCache(l, title, null);
-      if (l === "es") { fallbackFromEs = true; continue; }
-      throw new Error("missing");
-    }
-    if (summary.disambiguation) {
-      writeCache(l, title, null);
-      if (l === "es") { fallbackFromEs = true; continue; }
-      throw new Error("missing");
-    }
-    const j = summary.j;
-    let html = "";
-    try {
-      const raw = await fetchHtml(l, j.title ?? title);
-      if (raw) html = sanitize(raw, l);
-    } catch {
-      html = ""; // summary/extract still usable
-    }
-    const content: WikiContent = {
-      title: j.title ?? title,
-      description: j.description,
-      extract: j.extract ?? "",
-      html,
-      thumbnail: j.thumbnail?.source,
-      pageUrl: j.content_urls?.desktop?.page ?? `https://${l}.wikipedia.org/wiki/${encodeURIComponent(j.title ?? title)}`,
-      lang: l,
-      fallbackFromEs,
-    };
-    writeCache(l, title, content);
-    return content;
+  const cached = readCache(title);
+  if (cached !== undefined) {
+    if (cached === null) throw new Error("missing");
+    return cached;
   }
-  throw new Error("missing");
+
+  const summary = await fetchSummary(title);
+  if (!summary || summary.disambiguation) {
+    writeCache(title, null);
+    throw new Error("missing");
+  }
+  const j = summary.j;
+  let html = "";
+  try {
+    const raw = await fetchHtml(j.title ?? title);
+    if (raw) html = sanitize(raw);
+  } catch {
+    html = ""; // summary/extract still usable
+  }
+  const content: WikiContent = {
+    title: j.title ?? title,
+    description: j.description,
+    extract: j.extract ?? "",
+    html,
+    thumbnail: j.thumbnail?.source,
+    pageUrl: j.content_urls?.desktop?.page ?? `${WIKI}/wiki/${encodeURIComponent(j.title ?? title)}`,
+  };
+  writeCache(title, content);
+  return content;
 }

@@ -24,16 +24,15 @@ function Skeleton() {
 }
 
 export function WikiReaderBody({ saint }: { saint: Saint }) {
-  const { t, i18n } = useTranslation();
-  const lang = (i18n.language === "es" ? "es" : "en") as "en" | "es";
+  const { t } = useTranslation();
   const [state, setState] = useState<{ status: "loading" } | { status: "ok"; data: WikiContent } | { status: "error" }>({
     status: "loading",
   });
 
   const load = () => {
     setState({ status: "loading" });
-    // Prefer the Spanish title when the UI is in Spanish; loadWikiArticle falls back to EN.
-    loadWikiArticle(saint.name, lang === "es" ? (saint.wikiEs ?? saint.wiki) : saint.wiki, lang)
+    // La app es 100% en español: biografía de Wikipedia en español.
+    loadWikiArticle(saint.name, saint.wiki)
       .then((data) => setState({ status: "ok", data }))
       .catch(() => setState({ status: "error" }));
   };
@@ -41,7 +40,7 @@ export function WikiReaderBody({ saint }: { saint: Saint }) {
   useEffect(() => {
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [saint.id, lang]);
+  }, [saint.id]);
 
   if (state.status === "loading") {
     return (
@@ -53,8 +52,8 @@ export function WikiReaderBody({ saint }: { saint: Saint }) {
 
   if (state.status === "error") {
     const wikiUrl = saint.wiki
-      ? `https://${lang}.wikipedia.org/wiki/${encodeURIComponent(saint.wiki)}`
-      : `https://${lang}.wikipedia.org/w/index.php?search=${encodeURIComponent(saint.name)}`;
+      ? `https://es.wikipedia.org/wiki/${encodeURIComponent(saint.wiki)}`
+      : `https://es.wikipedia.org/w/index.php?search=${encodeURIComponent(saint.name)}`;
     return (
       <div className="text-center py-10">
         <p className="text-ink-soft mb-5">{t("saint.wikiError")}</p>
@@ -83,11 +82,6 @@ export function WikiReaderBody({ saint }: { saint: Saint }) {
   const { data } = state;
   return (
     <article>
-      {data.fallbackFromEs && (
-        <p className="text-sm bg-accent-soft border border-accent/40 text-accent-deep rounded-lg px-4 py-3 mb-6" role="note">
-          {t("saint.wikiFallback")}
-        </p>
-      )}
       {data.description && (
         <p className="text-sm uppercase tracking-widest text-muted mb-2">{data.description}</p>
       )}
@@ -96,7 +90,7 @@ export function WikiReaderBody({ saint }: { saint: Saint }) {
         <div className="wiki-article" dangerouslySetInnerHTML={{ __html: data.html }} />
       ) : null}
       <div className="mt-8 pt-5 border-t border-line flex flex-wrap items-center justify-between gap-3">
-        <p className="text-xs text-muted">Wikipedia ({data.lang.toUpperCase()}) · CC BY-SA</p>
+        <p className="text-xs text-muted">Wikipedia (ES) · CC BY-SA</p>
         <a
           href={data.pageUrl}
           target="_blank"
@@ -113,18 +107,16 @@ export function WikiReaderBody({ saint }: { saint: Saint }) {
 }
 
 export function SaintHeader({ saint, compact }: { saint: Saint; compact?: boolean }) {
-  const { t, i18n } = useTranslation();
-  const lang = i18n.language === "es" ? "es" : "en";
+  const { t } = useTranslation();
   const dates = yearRange(saint);
   const statusLabel = saint.status === "blessed" ? t("card.blessed") : t("card.saint");
 
   const facts: { label: string; value: string }[] = [];
   if (dates) facts.push({ label: t("saint.dates"), value: dates });
-  if (saint.country) facts.push({ label: t("saint.country"), value: lang === "es" ? saint.country.es : saint.country.en });
-  const ord = orderName(saint.order, lang);
+  if (saint.country) facts.push({ label: t("saint.country"), value: saint.country.n });
+  const ord = orderName(saint.order);
   if (ord) facts.push({ label: t("saint.order"), value: ord });
-  if (saint.century) facts.push({ label: t("saint.century"), value: centuryLabel(saint.century, lang) });
-  if (saint.patron) facts.push({ label: t("saint.patron"), value: saint.patron });
+  if (saint.century) facts.push({ label: t("saint.century"), value: centuryLabel(saint.century) });
 
   return (
     <div className={compact ? "" : "flex flex-col sm:flex-row gap-6 items-start"}>
@@ -133,9 +125,6 @@ export function SaintHeader({ saint, compact }: { saint: Saint; compact?: boolea
         <h1 className={`font-bold tracking-tight text-ink ${compact ? "text-2xl" : "text-3xl sm:text-4xl"}`}>
           {saint.name}
         </h1>
-        {saint.nameEs && saint.nameEs !== saint.name && (
-          <p className="text-muted mt-1">{saint.nameEs}</p>
-        )}
         <p className="text-sm font-semibold uppercase tracking-widest text-accent-deep mt-2">{statusLabel}</p>
         {facts.length > 0 && (
           <dl className="flex flex-wrap gap-x-6 gap-y-1.5 mt-3 text-sm">

@@ -9,7 +9,6 @@ export type AnalyticsEvent =
   | "century_selected"
   | "history_opened"
   | "random_saint"
-  | "language_changed"
   | "wikipedia_external_link_clicked";
 
 /** Anonymous product-event tracking. No personal data is collected. */

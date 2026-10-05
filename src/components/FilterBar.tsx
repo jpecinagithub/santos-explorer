@@ -11,8 +11,7 @@ interface Props {
 }
 
 export default function FilterBar({ filters, onChange, resultCount }: Props) {
-  const { t, i18n } = useTranslation();
-  const lang = i18n.language === "es" ? "es" : "en";
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const countries = allCountries();
   const orders = allOrders();
@@ -61,7 +60,7 @@ export default function FilterBar({ filters, onChange, resultCount }: Props) {
             <option value="all">{t("explore.all")}</option>
             {orders.map((o) => (
               <option key={o.id} value={o.id}>
-                {lang === "es" ? o.es : o.en} ({o.n})
+                {o.es} ({o.n})
               </option>
             ))}
           </select>
@@ -79,7 +78,7 @@ export default function FilterBar({ filters, onChange, resultCount }: Props) {
             <option value="">{t("explore.all")}</option>
             {countries.map((c) => (
               <option key={c.c} value={c.c}>
-                {lang === "es" ? c.es : c.en} ({c.n})
+                {c.name} ({c.count})
               </option>
             ))}
           </select>
@@ -97,7 +96,7 @@ export default function FilterBar({ filters, onChange, resultCount }: Props) {
             <option value="">{t("explore.all")}</option>
             {centuries.map((c) => (
               <option key={c.century} value={c.century}>
-                {centuryLabel(c.century, lang)} ({c.n})
+                {centuryLabel(c.century)} ({c.n})
               </option>
             ))}
           </select>

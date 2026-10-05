@@ -36,8 +36,7 @@ function SectionHead({ title, sub, linkTo, linkLabel }: { title: string; sub: st
 }
 
 export default function Home() {
-  const { t, i18n } = useTranslation();
-  const lang = i18n.language === "es" ? "es" : "en";
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { openSaint } = useReader();
 
@@ -124,7 +123,7 @@ export default function Home() {
                 to={`/order/${o.id}`}
                 className="px-4 py-2 rounded-full bg-white border border-line text-sm font-medium hover:border-accent hover:text-accent-deep transition-colors"
               >
-                {lang === "es" ? o.es : o.en}
+                {o.es}
                 <span className="text-muted ml-1.5">{o.n}</span>
               </Link>
             ))}
@@ -141,7 +140,7 @@ export default function Home() {
                 to={`/century/${c.century}`}
                 className="bg-white border border-line rounded-xl py-3 px-2 text-center hover:border-accent hover:shadow transition-all"
               >
-                <p className="font-bold text-sm">{centuryLabel(c.century, lang)}</p>
+                <p className="font-bold text-sm">{centuryLabel(c.century)}</p>
                 <p className="text-xs text-muted mt-0.5">{c.n}</p>
               </Link>
             ))}
@@ -185,8 +184,8 @@ export default function Home() {
                       {s.name}
                     </button>
                     <p className="text-xs text-muted">
-                      {(s.country ? (lang === "es" ? s.country.es : s.country.en) + " · " : "")}
-                      {orderName(s.order, lang) ?? ""}
+                      {(s.country ? s.country.n + " · " : "")}
+                      {orderName(s.order) ?? ""}
                     </p>
                   </li>
                 ))}

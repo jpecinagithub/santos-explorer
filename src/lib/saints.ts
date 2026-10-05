@@ -7,7 +7,7 @@ export const saints: Saint[] = raw as Saint[];
 
 interface Meta {
   total: number;
-  byCountry: { c: string; en: string; es: string; n: number }[];
+  byCountry: { c: string; name: string; count: number }[];
   byOrder: Record<string, number>;
   byCentury: Record<string, number>;
   byTag: Record<string, number>;
@@ -28,20 +28,21 @@ export function getSaintById(id: string): Saint | undefined {
   return byId.get(id);
 }
 
-export function orderName(orderId: string | null, lang: "en" | "es"): string | null {
+/** Nombre de la orden en español (la app es 100% en español). */
+export function orderName(orderId: string | null): string | null {
   if (!orderId) return null;
   const o = m.orders.find((x) => x.id === orderId);
-  return o ? (lang === "es" ? o.es : o.en) : orderId;
+  return o ? o.es : orderId;
 }
 
-export function allOrders(): { id: string; en: string; es: string; n: number }[] {
+export function allOrders(): { id: string; es: string; n: number }[] {
   return m.orders
     .map((o) => ({ ...o, n: m.byOrder[o.id] ?? 0 }))
     .filter((o) => o.n > 0)
     .sort((a, b) => b.n - a.n);
 }
 
-export function allCountries(): { c: string; en: string; es: string; n: number }[] {
+export function allCountries(): { c: string; name: string; count: number }[] {
   return m.byCountry;
 }
 
@@ -91,34 +92,29 @@ export function blessedList(): Saint[] {
   return saints.filter((s) => s.status === "blessed");
 }
 
-/** Curated rotating set of widely recognized saints present in the index. */
+/** Santos muy conocidos presentes en el índice (por id, estable ante cambios de nombre). */
 export function famousSaints(): Saint[] {
-  const names = [
-    "Francis of Assisi",
-    "Teresa of Ávila",
-    "Thomas Aquinas",
-    "Augustine of Hippo",
-    "John Paul II",
-    "Mother Teresa",
-    "Thérèse of Lisieux",
-    "Ignatius of Loyola",
-    "Catherine of Siena",
-    "Anthony of Padua",
-    "Patrick",
-    "Nicholas",
-    "Francis Xavier",
-    "John of the Cross",
-    "Teresa of Calcutta",
-    "Padre Pio",
-    "Joan of Arc",
-    "Thomas More",
-    "Maximilian Kolbe",
-    "Óscar Romero",
+  const ids = [
+    "francis-of-assisi",
+    "teresa-of-avila",
+    "thomas-aquinas",
+    "augustine-of-hippo",
+    "pope-john-paul-ii",
+    "mother-teresa",
+    "therese-of-lisieux",
+    "ignatius-of-loyola",
+    "catherine-of-siena",
+    "anthony-of-padua",
+    "saint-patrick",
+    "francis-xavier",
+    "john-of-the-cross",
+    "padre-pio",
+    "joan-of-arc",
+    "thomas-more",
+    "maximilian-kolbe",
+    "oscar-romero",
   ];
-  const found = names
-    .map((n) => saints.find((s) => s.name === n))
-    .filter((s): s is Saint => !!s);
-  return found;
+  return ids.map((id) => byId.get(id)).filter((s): s is Saint => !!s);
 }
 
 export function randomSaint(exceptId?: string): Saint {

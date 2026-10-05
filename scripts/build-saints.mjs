@@ -367,13 +367,6 @@ function centuryOf(year) {
   if (year <= 0) return 1;
   return Math.floor((year - 1) / 100) + 1;
 }
-function shortSummary(extract, max = 300) {
-  const one = (extract || "").replace(/\s+/g, " ").trim();
-  if (one.length <= max) return one;
-  const cut = one.slice(0, max);
-  const last = Math.max(cut.lastIndexOf(". "), cut.lastIndexOf("; "), cut.lastIndexOf(" "));
-  return (last > 120 ? cut.slice(0, last) : cut).trim() + "…";
-}
 
 // ----------------------------------------------------------------- build
 function build() {
@@ -386,10 +379,16 @@ function build() {
   } catch {
     /* optional: run scripts/fetch-es-summaries.mjs first */
   }
+  let esTitles = {};
+  try {
+    esTitles = load("es-titles.json");
+  } catch {
+    /* optional: run scripts/fetch-es-summaries.mjs first */
+  }
 
   const saints = [];
   const seenSlugs = new Set();
-  const stats = { dropped: 0, noDates: 0, noCountry: 0, noOrder: 0 };
+  const stats = { dropped: 0, noDates: 0, noCountry: 0, noOrder: 0, noSpanish: 0 };
 
   for (const key of Object.keys(pages)) {
     const p = pages[key];
@@ -488,33 +487,32 @@ function build() {
     else if (/\babbot\b/.test(t)) roles.push("abbot");
     if (/\bking\b|\bqueen\b|\bprince\b|\bprincess\b|\bemperor\b|\bempress\b|\bduke\b|\bduchess\b/.test(t)) roles.push("royal");
 
-    // patronage
-    let patron = null;
-    const pm = extract.match(/patron saint of ([^.]{3,120}?)(?:\.|;|, and| and |$)/i);
-    if (pm) patron = pm[1].trim();
-
     let id = slug(p.title) || "saint";
     let k = 2;
     while (seenSlugs.has(id)) id = `${slug(p.title)}-${k++}`;
     seenSlugs.add(id);
 
+    // La app es 100% en español: solo santos con resumen en español.
+    const summaryEs = esSummaries[id];
+    const titleEs = esTitles[id];
+    if (!summaryEs || !titleEs) {
+      stats.noSpanish++;
+      continue;
+    }
+
     saints.push({
       id,
-      name: p.title,
-      nameEs: p.esTitle || null,
+      name: titleEs,
       birth, death, century,
-      country: country ? { c: country.code, en: country.en, es: country.es } : null,
+      country: country ? { c: country.code, n: country.es } : null,
       order,
       sex,
       status,
       tags,
       roles,
-      patron,
-      summary: shortSummary(extract),
-      summaryEs: esSummaries[id] || null,
+      summary: summaryEs,
       thumb: p.thumb,
-      wiki: p.title,
-      wikiEs: p.esTitle,
+      wiki: titleEs,
     });
   }
 
@@ -524,8 +522,8 @@ function build() {
     byStatus[s.status] = (byStatus[s.status] || 0) + 1;
     if (s.country) {
       const k = s.country.c;
-      byCountry[k] = byCountry[k] || { c: k, en: s.country.en, es: s.country.es, n: 0 };
-      byCountry[k].n++;
+      byCountry[k] = byCountry[k] || { c: k, name: s.country.n, count: 0 };
+      byCountry[k].count++;
     }
     if (s.order) byOrder[s.order] = (byOrder[s.order] || 0) + 1;
     if (s.century) byCentury[s.century] = (byCentury[s.century] || 0) + 1;
@@ -535,13 +533,13 @@ function build() {
   writeFileSync(join(OUT, "saints.json"), JSON.stringify(saints));
   writeFileSync(join(OUT, "meta.json"), JSON.stringify({
     total: saints.length,
-    byCountry: Object.values(byCountry).sort((a, b) => b.n - a.n),
+    byCountry: Object.values(byCountry).sort((a, b) => b.count - a.count),
     byOrder, byCentury, byTag, byStatus,
-    orders: ORDERS.map((o) => ({ id: o.id, en: o.en, es: o.es })),
+    orders: ORDERS.map((o) => ({ id: o.id, es: o.es })),
     generated: new Date().toISOString().slice(0, 10),
   }));
   console.log(`saints: ${saints.length}`, stats);
-  console.log("top countries:", Object.values(byCountry).sort((a, b) => b.n - a.n).slice(0, 8).map((x) => `${x.en}:${x.n}`).join(", "));
+  console.log("top countries:", Object.values(byCountry).sort((a, b) => b.count - a.count).slice(0, 8).map((x) => `${x.name}:${x.count}`).join(", "));
   console.log("top orders:", Object.entries(byOrder).sort((a, b) => b[1] - a[1]).slice(0, 8).map(([k, v]) => `${k}:${v}`).join(", "));
   console.log("tags:", JSON.stringify(byTag));
 }

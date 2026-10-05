@@ -9,8 +9,7 @@ import { centuryLabel } from "../types/saint";
 import { trackEvent } from "../lib/analytics";
 
 export function CenturiesPage() {
-  const { t, i18n } = useTranslation();
-  const lang = i18n.language === "es" ? "es" : "en";
+  const { t } = useTranslation();
   const centuries = allCenturies();
   return (
     <>
@@ -26,7 +25,7 @@ export function CenturiesPage() {
               className="group bg-white border border-line rounded-2xl p-6 hover:shadow-lg hover:border-accent/50 hover:-translate-y-0.5 transition-all"
             >
               <h2 className="text-xl font-bold group-hover:text-accent-deep transition-colors">
-                {centuryLabel(c.century, lang)}
+                {centuryLabel(c.century)}
               </h2>
               <p className="text-sm font-semibold text-accent-deep mt-2">
                 {c.n.toLocaleString()} {t("common.saints")}
@@ -40,8 +39,7 @@ export function CenturiesPage() {
 }
 
 export function CenturyPage() {
-  const { t, i18n } = useTranslation();
-  const lang = i18n.language === "es" ? "es" : "en";
+  const { t } = useTranslation();
   const { n } = useParams<{ n: string }>();
   const { openSaint } = useReader();
   const century = n ? parseInt(n, 10) : NaN;
@@ -65,10 +63,10 @@ export function CenturyPage() {
 
   return (
     <>
-      <Seo title={centuryLabel(century, lang)} path={`/century/${century}`} />
+      <Seo title={centuryLabel(century)} path={`/century/${century}`} />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 py-10">
         <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent-deep mb-2">{t("centuries.title")}</p>
-        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-2">{centuryLabel(century, lang)}</h1>
+        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-2">{centuryLabel(century)}</h1>
         <p className="text-muted mb-8">{list.length.toLocaleString()} {t("common.saints")}</p>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {list.slice(0, 60).map((s) => (

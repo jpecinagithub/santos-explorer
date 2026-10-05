@@ -2,15 +2,13 @@ import { useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { HaloIcon, SearchIcon, MenuIcon, CloseIcon } from "./icons";
-import { setLang, type Lang } from "../i18n";
 import { trackEvent } from "../lib/analytics";
 
 export default function Header() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [q, setQ] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
-  const lang: Lang = i18n.language === "es" ? "es" : "en";
 
   const nav = [
     { to: "/explore", label: t("nav.explore") },
@@ -26,12 +24,6 @@ export default function Header() {
     trackEvent("search_performed", { query: q.trim().slice(0, 60) });
     navigate(`/explore?q=${encodeURIComponent(q.trim())}`);
     setMenuOpen(false);
-  };
-
-  const switchLang = (l: Lang) => {
-    if (l === lang) return;
-    setLang(l);
-    trackEvent("language_changed", { lang: l });
   };
 
   const linkCls = ({ isActive }: { isActive: boolean }) =>
@@ -73,20 +65,7 @@ export default function Header() {
             </div>
           </form>
 
-          <div className="ml-auto md:ml-2 flex items-center gap-1 text-sm font-semibold" role="group" aria-label={t("common.language")}>
-            {(["en", "es"] as Lang[]).map((l) => (
-              <button
-                key={l}
-                onClick={() => switchLang(l)}
-                aria-pressed={lang === l}
-                className={`px-2 py-1 rounded ${
-                  lang === l ? "text-accent-deep bg-accent-soft" : "text-muted hover:text-ink"
-                }`}
-              >
-                {l.toUpperCase()}
-              </button>
-            ))}
-          </div>
+          <div className="ml-auto md:ml-0" />
 
           <button
             className="lg:hidden p-2 -mr-2 text-ink-soft"

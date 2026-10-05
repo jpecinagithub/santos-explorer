@@ -13,34 +13,28 @@ export type SaintTag =
 
 export interface SaintCountry {
   c: string; // ISO code (or Wikidata QID fallback)
-  en: string;
-  es: string;
+  n: string; // nombre en español
 }
 
 export interface Saint {
   id: string;
-  name: string;
-  nameEs: string | null;
+  name: string; // nombre en español (título del artículo de Wikipedia en español)
   birth: number | null;
   death: number | null;
-  century: number | null; // 1 = 1st century
+  century: number | null; // 1 = siglo I
   country: SaintCountry | null;
   order: string | null; // order id, see SaintOrder
   sex: "m" | "f" | null;
   status: "saint" | "blessed";
   tags: SaintTag[];
   roles: string[];
-  patron: string | null;
-  summary: string;
-  summaryEs: string | null; // Spanish summary (null -> fall back to summary)
+  summary: string; // resumen en español
   thumb: string | null;
-  wiki: string; // English Wikipedia title
-  wikiEs: string | null; // Spanish Wikipedia title
+  wiki: string; // título del artículo de Wikipedia en español
 }
 
 export interface SaintOrder {
   id: string;
-  en: string;
   es: string;
 }
 
@@ -86,18 +80,14 @@ export const SLUG_TAG: Record<string, SaintTag> = Object.fromEntries(
   Object.entries(TAG_SLUG).map(([k, v]) => [v, k]),
 ) as Record<string, SaintTag>;
 
-export function centuryLabel(n: number, lang: "en" | "es"): string {
-  if (lang === "es") {
-    const ord = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX", "XXI"];
-    return `Siglo ${ord[n - 1] ?? n}`;
-  }
-  const suf = n === 1 ? "st" : n === 2 ? "nd" : n === 3 ? "rd" : "th";
-  return `${n}${suf} century`;
+export function centuryLabel(n: number): string {
+  const ord = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX", "XXI"];
+  return `Siglo ${ord[n - 1] ?? n}`;
 }
 
 export function yearRange(s: Saint): string | null {
   if (s.birth && s.death) return `${s.birth}–${s.death}`;
-  if (s.death) return `d. ${s.death}`;
-  if (s.birth) return `b. ${s.birth}`;
+  if (s.death) return `f. ${s.death}`;
+  if (s.birth) return `n. ${s.birth}`;
   return null;
 }

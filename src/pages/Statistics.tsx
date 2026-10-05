@@ -22,19 +22,18 @@ function Card({ title, children }: { title: string; children: React.ReactNode })
 }
 
 export default function Statistics() {
-  const { t, i18n } = useTranslation();
-  const lang = i18n.language === "es" ? "es" : "en";
+  const { t } = useTranslation();
 
   const byCentury = allCenturies().map((c) => ({
-    name: centuryLabel(c.century, lang).replace(/^Siglo /, "s. "),
+    name: centuryLabel(c.century).replace(/^Siglo /, "s. "),
     n: c.n,
   }));
   const byCountry = topCountries(12).map((c) => ({
-    name: lang === "es" ? c.es : c.en,
-    n: c.n,
+    name: c.name,
+    n: c.count,
   }));
   const byOrder = allOrders().slice(0, 12).map((o) => ({
-    name: lang === "es" ? o.es : o.en,
+    name: o.es,
     n: o.n,
   }));
   const byTag = TAGS.map((tag) => ({ name: t(`tags.${tag}`), n: tagCount(tag) }))
