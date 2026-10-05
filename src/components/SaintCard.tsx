@@ -63,8 +63,10 @@ export default function SaintCard({
           <p className="text-xs text-muted mt-0.5">{saintSubtitle(saint, lang)}</p>
         </div>
       </div>
-      {saint.summary && (
-        <p className="text-sm text-ink-soft leading-relaxed mt-3 line-clamp-3">{saint.summary}</p>
+      {(lang === "es" ? saint.summaryEs || saint.summary : saint.summary) && (
+        <p className="text-sm text-ink-soft leading-relaxed mt-3 line-clamp-3">
+          {lang === "es" ? saint.summaryEs || saint.summary : saint.summary}
+        </p>
       )}
       <span className="inline-flex items-center gap-1.5 text-sm font-medium text-accent-deep mt-4 group-hover:gap-2.5 transition-all">
         {t("card.readBiography")}

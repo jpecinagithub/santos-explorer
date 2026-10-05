@@ -356,7 +356,7 @@ function normIso(iso) {
 // ------------------------------------------------------- special lists ---
 const DOCTORS = ["augustine of hippo","ambrose","jerome","pope gregory i","gregory the great","athanasius of alexandria","john chrysostom","basil of caesarea","basil the great","gregory of nazianzus","thomas aquinas","bonaventure","anselm of canterbury","isidore of seville","peter chrysologus","pope leo i","leo the great","peter damian","bernard of clairvaux","hilary of poitiers","alphonsus liguori","alphonsus maria de liguori","francis de sales","cyril of alexandria","cyril of jerusalem","john of damascus","bede","ephrem the syrian","peter canisius","john of the cross","robert bellarmine","albertus magnus","albert the great","anthony of padua","lawrence of brindisi","teresa of avila","catherine of siena","therese of lisieux","john of avila","hildegard of bingen","gregory of narek","irenaeus","irenaeus of lyon"].map(norm);
 const APOSTLES = ["andrew the apostle","bartholomew the apostle","james the great","james, son of alphaeus","john the apostle","jude the apostle","matthew the apostle","matthias the apostle","saint peter","philip the apostle","simon the zealot","thomas the apostle","paul the apostle"].map(norm);
-const EVANGELISTS = ["mark the evangelist","luke the evangelist"].map(norm);
+const EVANGELISTS = ["mark the evangelist","luke the evangelist","matthew the apostle","john the apostle"].map(norm);
 
 function yearOf(wdTime) {
   const m = /^\+?(-?\d{1,4})/.exec(wdTime || "");
@@ -380,6 +380,12 @@ function build() {
   const pages = load("pages.json");
   const claims = load("claims.json");
   const entities = load("entities.json");
+  let esSummaries = {};
+  try {
+    esSummaries = load("es-summaries.json");
+  } catch {
+    /* optional: run scripts/fetch-es-summaries.mjs first */
+  }
 
   const saints = [];
   const seenSlugs = new Set();
@@ -505,6 +511,7 @@ function build() {
       roles,
       patron,
       summary: shortSummary(extract),
+      summaryEs: esSummaries[id] || null,
       thumb: p.thumb,
       wiki: p.title,
       wikiEs: p.esTitle,

@@ -32,6 +32,7 @@ export interface Saint {
   roles: string[];
   patron: string | null;
   summary: string;
+  summaryEs: string | null; // Spanish summary (null -> fall back to summary)
   thumb: string | null;
   wiki: string; // English Wikipedia title
   wikiEs: string | null; // Spanish Wikipedia title
