@@ -76,7 +76,7 @@ export function CenturyPage() {
         {list.length > 60 && (
           <div className="text-center mt-10">
             <Link
-              to={`/explore?century=${century}`}
+              to={`/explorar?century=${century}`}
               className="px-8 py-3 rounded-full bg-night text-white text-sm font-medium hover:bg-ink-soft transition-colors"
             >
               {t("common.viewAll")} ({list.length.toLocaleString()})

@@ -1,5 +1,4 @@
-import Fuse from "fuse.js";
-import { saints, orderName } from "./saints";
+import { saints, orderName, allOrders, allCountries } from "./saints";
 import type { ExploreFilters, Saint, SaintTag } from "../types/saint";
 import { TAGS, centuryLabel } from "../types/saint";
 
@@ -14,35 +13,31 @@ export function norm(s: string): string {
 
 interface SearchDoc extends Saint {
   nameNorm: string;
-  blob: string;
 }
 
-const docs: SearchDoc[] = saints.map((s) => ({
-  ...s,
-  nameNorm: norm(s.name),
-  blob: norm(
-    [
-      s.tags.join(" "),
-      s.roles.join(" "),
-      s.country?.n ?? "",
-      orderName(s.order) ?? "",
-      s.summary,
-      s.status,
-      s.sex === "f" ? "mujer femenina" : s.sex === "m" ? "hombre masculino" : "",
-    ].join(" "),
-  ),
-}));
+const docs: SearchDoc[] = saints.map((s) => ({ ...s, nameNorm: norm(s.name) }));
 
-const fuse = new Fuse(docs, {
-  keys: [
-    { name: "nameNorm", weight: 0.55 },
-    { name: "blob", weight: 0.45 },
-  ],
-  threshold: 0.38,
-  ignoreLocation: true,
-  includeScore: true,
-  minMatchCharLength: 2,
-});
+// ---------------------------------------------------------------- matching --
+/**
+ * Strict name matching. Every query token must be a word-prefix of the name,
+ * or the concatenated query must appear in the spaceless name
+ * ("josemaria" matches "Josemaría Escrivá"). Returns a tier (lower is better)
+ * or -1 when there is no match. No fuzzy / typo tolerance by design.
+ */
+export function nameTier(query: string, nameNorm: string): number {
+  const tokens = norm(query).split(/\s+/).filter((t) => t.length >= 2);
+  if (!tokens.length) return -1;
+  const qn = tokens.join(" ");
+  const words = nameNorm.split(/\s+/);
+  const joined = words.join("");
+  const concatQ = tokens.join("");
+  const allWordPrefix = tokens.every((t) => words.some((w) => w.startsWith(t)));
+  if (!allWordPrefix && !joined.includes(concatQ)) return -1;
+  if (nameNorm === qn) return 0;
+  if (nameNorm.startsWith(qn)) return 1;
+  if (allWordPrefix) return 2;
+  return 3;
+}
 
 // ---------------------------------------------------------------- parsing --
 // Palabras en español para el parseo de consultas ("mártires siglo III", "beato franciscano").
@@ -65,20 +60,30 @@ const ROMAN: Record<string, number> = {
   xi: 11, xii: 12, xiii: 13, xiv: 14, xv: 15, xvi: 16, xvii: 17, xviii: 18, xix: 19, xx: 20, xxi: 21,
 };
 
+// Tratamientos que no forman parte del nombre en el índice.
+const STOPWORDS = new Set([
+  "san", "santa", "santo", "sor", "fray", "frei", "padre", "madre",
+  "don", "dona", "doña",
+]);
+
 export interface ParsedQuery {
   text: string;
   century: number | null;
   tag: SaintTag | null;
   status: "santo" | "beato" | null;
+  order: string | null;
+  country: string | null;
 }
 
-/** Extract structured hints (century, tag, status) from free text. Deterministic, no LLM. */
+/** Extract structured hints (century, tag, status, order, country) from free text. Deterministic, no LLM. */
 export function parseQuery(q: string): ParsedQuery {
   const n = norm(q);
   let text = n;
   let century: number | null = null;
   let tag: SaintTag | null = null;
   let status: "santo" | "beato" | null = null;
+  let order: string | null = null;
+  let country: string | null = null;
 
   // Siglo: "siglo xiii", "s. xiii", "s xiii"
   const sigloMatch = n.match(/\b(?:siglo|s\.?)\s*([ivxl]+|\d{1,2})\b/);
@@ -106,8 +111,42 @@ export function parseQuery(q: string): ParsedQuery {
     if (tag) break;
   }
 
-  text = text.replace(/\s+/g, " ").trim();
-  return { text, century, tag, status };
+  // Orden religiosa: "franciscano", "carmelitas", "de la salle"...
+  for (const o of allOrders()) {
+    const on = norm(o.es);
+    const words = text.split(/\s+/).filter(Boolean);
+    const hitWord = words.some((t) => t.length >= 4 && (on.startsWith(t) || t.startsWith(on)));
+    const hitFull = on.length > 3 && text.includes(on);
+    if (hitWord || hitFull) {
+      order = o.id;
+      text = text.replace(on, " ");
+      for (const w of words) {
+        if (w.length >= 4 && (on.startsWith(w) || w.startsWith(on))) {
+          text = text.replace(new RegExp(`\\b${w}\\b`, "g"), " ");
+        }
+      }
+      break;
+    }
+  }
+
+  // País: "italia", "españa", "méxico"...
+  for (const c of allCountries()) {
+    const cn = norm(c.name);
+    if (cn.length > 2 && new RegExp(`\\b${cn}\\b`).test(text)) {
+      country = c.c;
+      text = text.replace(new RegExp(`\\b${cn}\\b`, "g"), " ");
+      break;
+    }
+  }
+
+  // Tratamientos fuera.
+  text = text
+    .split(/\s+/)
+    .filter((w) => w && !STOPWORDS.has(w))
+    .join(" ")
+    .replace(/\s+/g, " ")
+    .trim();
+  return { text, century, tag, status, order, country };
 }
 
 // ---------------------------------------------------------------- search ---
@@ -128,10 +167,14 @@ function matchesFilters(s: Saint, f: ExploreFilters): boolean {
 
 export function searchSaints(filters: ExploreFilters): SearchResult[] {
   const parsed = parseQuery(filters.q);
-  const effTag = filters.tag !== "all" ? filters.tag : parsed.tag;
-  const effCentury = filters.century ?? parsed.century;
-  const effStatus = filters.status !== "all" ? filters.status : (parsed.status ?? "all");
-  const eff: ExploreFilters = { ...filters, tag: effTag ?? "all", century: effCentury, status: effStatus };
+  const eff: ExploreFilters = {
+    ...filters,
+    tag: filters.tag !== "all" ? filters.tag : (parsed.tag ?? "all"),
+    century: filters.century ?? parsed.century,
+    status: filters.status !== "all" ? filters.status : (parsed.status ?? "all"),
+    order: filters.order !== "all" ? filters.order : (parsed.order ?? "all"),
+    country: filters.country ?? parsed.country,
+  };
 
   const pool: SearchDoc[] = docs.filter((s) => matchesFilters(s, eff));
 
@@ -142,19 +185,12 @@ export function searchSaints(filters: ExploreFilters): SearchResult[] {
       .sort((a, b) => (a.saint.death ?? a.saint.birth ?? 9999) - (b.saint.death ?? b.saint.birth ?? 9999));
   }
 
-  const hits = fuse.search(parsed.text, { limit: 400 });
-  const poolIds = new Set(pool.map((s) => s.id));
-  const qn = norm(parsed.text);
-  const ranked = hits
-    .filter((h) => poolIds.has(h.item.id))
-    .map((h) => {
-      let boost = 0;
-      if (h.item.nameNorm.startsWith(qn)) boost -= 0.25;
-      else if (h.item.nameNorm.includes(qn)) boost -= 0.12;
-      return { saint: h.item as Saint, score: (h.score ?? 1) + boost };
-    })
-    .sort((a, b) => a.score - b.score);
-  return ranked;
+  // Strict name matching only: no fuzzy, no summary trawling.
+  return pool
+    .map((s) => ({ saint: s as Saint, tier: nameTier(parsed.text, s.nameNorm) }))
+    .filter((r) => r.tier >= 0)
+    .sort((a, b) => a.tier - b.tier || a.saint.name.localeCompare(b.saint.name, "es"))
+    .map(({ saint, tier }) => ({ saint, score: tier }));
 }
 
 // ------------------------------------------------------------ autocomplete --
@@ -227,12 +263,14 @@ export function suggest(query: string, limit = 8): Suggestion[] {
 
   // Pista estructurada (p. ej. "mártires siglo iii").
   const parsed = parseQuery(query);
-  if ((parsed.century || parsed.tag || parsed.status) && out.length < limit) {
+  if ((parsed.century || parsed.tag || parsed.status || parsed.order || parsed.country) && out.length < limit) {
     const bits: string[] = [];
     if (parsed.tag) bits.push(TAG_ES[parsed.tag]);
+    if (parsed.order) bits.push(orderName(parsed.order) ?? parsed.order);
+    if (parsed.country) bits.push(allCountries().find((c) => c.c === parsed.country)?.name ?? "");
     if (parsed.century) bits.push(centuryLabel(parsed.century));
     if (parsed.status) bits.push("beatos");
-    out.push({ kind: "hint", label: bits.join(" · "), query });
+    out.push({ kind: "hint", label: bits.filter(Boolean).join(" · "), query });
   }
 
   return out.slice(0, limit);

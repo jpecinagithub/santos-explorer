@@ -392,6 +392,12 @@ function build() {
   const stats = { dropped: 0, noDates: 0, noCountry: 0, noOrder: 0, noSpanish: 0, blocked: 0 };
   // Artefactos conocidos que no son santos (restos del parseo de la lista original).
   const BLOCKLIST = new Set(["university of toronto press", "isbn"]);
+  // Slugs en español de artículos conceptuales (no personas), detectados 2026-10-05.
+  const BLOCKED_SLUGS = new Set([
+    "beatificacion", "vision-beatifica", "canonizacion", "iglesia-catolica",
+    "aparicion-mariana", "advocacion-mariana", "opus-dei", "kent",
+    "arzobispo-de-canterbury",
+  ]);
 
   for (const key of Object.keys(pages)) {
     const p = pages[key];
@@ -510,6 +516,9 @@ function build() {
     let j = 2;
     while (seenSlugsEs.has(id)) id = `${slug(titleEs)}-${j++}`;
     seenSlugsEs.add(id);
+
+    // Artículos conceptuales que no son personas (detectados 2026-10-05).
+    if (BLOCKED_SLUGS.has(id)) { stats.blocked++; continue; }
 
     saints.push({
       id,

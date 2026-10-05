@@ -60,6 +60,11 @@ export default function Header() {
                 onChange={(e) => setQ(e.target.value)}
                 placeholder={t("nav.searchPlaceholder")}
                 aria-label={t("common.search")}
+                autoComplete="off"
+                autoCorrect="off"
+                autoCapitalize="off"
+                spellCheck={false}
+                enterKeyHint="search"
                 className="w-48 focus:w-64 transition-all text-sm bg-white border border-line rounded-full pl-9 pr-3 py-2 placeholder:text-muted/70 focus:border-accent focus:outline-none"
               />
             </div>
@@ -88,6 +93,11 @@ export default function Header() {
                 onChange={(e) => setQ(e.target.value)}
                 placeholder={t("nav.searchPlaceholder")}
                 aria-label={t("common.search")}
+                autoComplete="off"
+                autoCorrect="off"
+                autoCapitalize="off"
+                spellCheck={false}
+                enterKeyHint="search"
                 className="w-full text-sm bg-white border border-line rounded-full pl-9 pr-3 py-2.5 placeholder:text-muted/70 focus:border-accent focus:outline-none"
               />
             </div>

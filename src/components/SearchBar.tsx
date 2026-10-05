@@ -48,7 +48,7 @@ export default function SearchBar({ size = "compact", initialValue = "", onSelec
       else navigate(`/santo/${s.saint.id}`);
     } else if (s.query) {
       trackEvent("search_performed", { query: s.query.slice(0, 60) });
-      navigate(`/explore?q=${encodeURIComponent(s.query)}`);
+      navigate(`/explorar?q=${encodeURIComponent(s.query)}`);
     }
   };
 
@@ -61,7 +61,7 @@ export default function SearchBar({ size = "compact", initialValue = "", onSelec
     if (!value.trim()) return;
     setOpen(false);
     trackEvent("search_performed", { query: value.trim().slice(0, 60) });
-    navigate(`/explore?q=${encodeURIComponent(value.trim())}`);
+    navigate(`/explorar?q=${encodeURIComponent(value.trim())}`);
   };
 
   const onKey = (e: React.KeyboardEvent) => {
@@ -102,6 +102,11 @@ export default function SearchBar({ size = "compact", initialValue = "", onSelec
             aria-controls="search-suggestions"
             role="combobox"
             aria-autocomplete="list"
+            autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="off"
+            spellCheck={false}
+            enterKeyHint="search"
             className={`w-full bg-white border border-line rounded-full shadow-sm pl-12 pr-5 placeholder:text-muted/70 focus:border-accent focus:ring-2 focus:ring-accent/25 focus:outline-none transition-shadow ${
               hero ? "py-4 text-lg" : "py-2.5 text-sm"
             }`}

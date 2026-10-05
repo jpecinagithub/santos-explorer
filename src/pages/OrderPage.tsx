@@ -76,7 +76,7 @@ export function OrderPage() {
         {list.length > 60 && (
           <div className="text-center mt-10">
             <Link
-              to={`/explore?order=${order.id}`}
+              to={`/explorar?order=${order.id}`}
               className="px-8 py-3 rounded-full bg-night text-white text-sm font-medium hover:bg-ink-soft transition-colors"
             >
               {t("common.viewAll")} ({list.length.toLocaleString()})
