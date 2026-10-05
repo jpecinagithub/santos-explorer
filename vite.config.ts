@@ -30,6 +30,9 @@ export default defineConfig({
       workbox: {
         // App shell + saints index cached for offline; Wikipedia content is cached
         // separately in localStorage by the app itself (24h TTL).
+        // The saints data chunk exceeds workbox's 2 MiB default precache limit
+        // (it now carries Spanish summaries), so raise the cap to keep it offline.
+        maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2,json}'],
         navigateFallback: 'index.html',
         runtimeCaching: [

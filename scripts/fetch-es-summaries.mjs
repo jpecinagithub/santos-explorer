@@ -9,6 +9,12 @@
  * 3. Writes scripts/.cache/es-summaries.json: { saintId: summaryEs }
  *
  * build-saints.mjs merges this cache into saints.json as `summaryEs`.
+ *
+ * IMPORTANT: MediaWiki may normalize titles ("Joaquina Vedruna de Mas" ->
+ * canonical form) or follow redirects. The `query.normalized` and
+ * `query.redirects` arrays are used to correlate every response page back
+ * to the requested title; without this, mappings are silently lost.
+ *
  * Usage: node scripts/fetch-es-summaries.mjs
  */
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
@@ -37,6 +43,22 @@ async function api(host, params, retries = 5) {
   throw new Error(`gave up after ${retries} retries: ${host}`);
 }
 
+/** Build a resolver requested-title -> canonical page title from an API response. */
+function aliasResolver(query) {
+  const alias = new Map();
+  for (const n of query?.normalized || []) alias.set(n.from, n.to);
+  for (const r of query?.redirects || []) alias.set(r.from, r.to);
+  return (t) => {
+    let cur = t;
+    const seen = new Set();
+    while (alias.has(cur) && !seen.has(cur)) {
+      seen.add(cur);
+      cur = alias.get(cur);
+    }
+    return cur;
+  };
+}
+
 function shortSummary(extract, max = 300) {
   const one = (extract || "").replace(/\s+/g, " ").trim();
   if (one.length <= max) return one;
@@ -48,13 +70,11 @@ function shortSummary(extract, max = 300) {
 const saints = JSON.parse(readFileSync(SAINTS, "utf8"));
 console.log(`saints: ${saints.length}`);
 
-// Saints that already know their Spanish title (from the EN pipeline) skip langlinks.
-const byId = new Map(saints.map((s) => [s.id, s]));
 const needMap = saints.filter((s) => !s.wikiEs && s.wiki);
 const haveEs = saints.filter((s) => s.wikiEs);
 console.log(`with wikiEs already: ${haveEs.length}, need langlinks: ${needMap.length}`);
 
-// ---- 1. langlinks: en title -> es title ----
+// ---- 1. langlinks: en title -> es title (with alias resolution) ----
 const enToEs = new Map();
 for (let i = 0; i < needMap.length; i += 50) {
   const batch = needMap.slice(i, i + 50);
@@ -62,32 +82,32 @@ for (let i = 0; i < needMap.length; i += 50) {
     action: "query",
     prop: "langlinks",
     lllang: "es",
+    lllimit: "500", // default is 10 per query — without this, most mappings are silently lost
     titles: batch.map((s) => s.wiki).join("|"),
     redirects: "1",
   });
-  const pages = data?.query?.pages || {};
-  for (const p of Object.values(pages)) {
-    const ll = (p.langlinks || []).find((l) => l.lang === "es");
-    if (ll) enToEs.set(p.title, ll["*"]);
+  const q = data?.query || {};
+  const resolve = aliasResolver(q);
+  const byTitle = new Map(Object.values(q.pages || {}).map((p) => [p.title, p]));
+  for (const s of batch) {
+    const page = byTitle.get(resolve(s.wiki));
+    const ll = (page?.langlinks || []).find((l) => l.lang === "es");
+    if (ll) enToEs.set(s.id, ll["*"]);
   }
-  process.stdout.write(`\rlanglinks ${Math.min(i + 50, needMap.length)}/${needMap.length}`);
-  await sleep(300);
+  process.stdout.write(`\rlanglinks ${Math.min(i + 50, needMap.length)}/${needMap.length} (resolved ${enToEs.size})`);
+  await sleep(250);
 }
 console.log(`\nlanglinks resolved: ${enToEs.size}`);
 
-// Build id -> es title
+// id -> es title
 const idToEsTitle = new Map();
 for (const s of haveEs) idToEsTitle.set(s.id, s.wikiEs);
-for (const s of needMap) {
-  const t = enToEs.get(s.wiki);
-  if (t) idToEsTitle.set(s.id, t);
-}
+for (const [id, t] of enToEs) idToEsTitle.set(id, t);
 console.log(`saints with a Spanish title: ${idToEsTitle.size}`);
 
-// ---- 2. extracts from es.wikipedia ----
+// ---- 2. extracts from es.wikipedia (with alias resolution) ----
 const entries = [...idToEsTitle.entries()];
 const summaries = {};
-let fetched = 0;
 for (let i = 0; i < entries.length; i += 20) {
   const batch = entries.slice(i, i + 20);
   const data = await api("es.wikipedia.org", {
@@ -99,20 +119,17 @@ for (let i = 0; i < entries.length; i += 20) {
     titles: batch.map(([, t]) => t).join("|"),
     redirects: "1",
   });
-  const pages = data?.query?.pages || {};
-  for (const p of Object.values(pages)) {
-    if (p.missing || !p.extract) continue;
-    // find the saint id for this returned title (normalize via page title match)
-    const hit = batch.find(([, t]) => t === p.title);
-    if (hit) {
-      summaries[hit[0]] = shortSummary(p.extract);
-      fetched++;
-    }
+  const q = data?.query || {};
+  const resolve = aliasResolver(q);
+  const byTitle = new Map(Object.values(q.pages || {}).map((p) => [p.title, p]));
+  for (const [id, t] of batch) {
+    const page = byTitle.get(resolve(t));
+    if (page && !page.missing && page.extract) summaries[id] = shortSummary(page.extract);
   }
-  process.stdout.write(`\rextracts ${Math.min(i + 20, entries.length)}/${entries.length} (ok ${fetched})`);
-  await sleep(300);
+  process.stdout.write(`\rextracts ${Math.min(i + 20, entries.length)}/${entries.length} (ok ${Object.keys(summaries).length})`);
+  await sleep(250);
 }
-console.log(`\nSpanish summaries fetched: ${fetched}`);
+console.log(`\nSpanish summaries fetched: ${Object.keys(summaries).length}`);
 
 writeFileSync(join(CACHE, "es-summaries.json"), JSON.stringify(summaries), "utf8");
 console.log("wrote scripts/.cache/es-summaries.json");
