@@ -1,0 +1,140 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --color-paper: #f7f6f3;
+  --color-ink: #16191d;
+  --color-ink-soft: #3d434c;
+  --color-accent: #b45309;
+  --color-accent-deep: #92400e;
+  --color-accent-soft: #faeedc;
+  --color-muted: #6b7280;
+  --color-night: #13161a;
+  --color-night-soft: #1c2026;
+  --color-line: #e6e2d8;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-paper text-ink font-sans antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: #b45309;
+  color: #fff;
+}
+
+/* Visible focus for keyboard users (WCAG AA) */
+:focus-visible {
+  outline: 2px solid #b45309;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---- Wikipedia reader typography ---- */
+.wiki-article {
+  @apply text-ink-soft leading-relaxed;
+  font-size: 1.02rem;
+}
+.wiki-article p { margin: 0 0 1em; }
+.wiki-article h2 {
+  @apply text-ink font-bold;
+  font-size: 1.35rem;
+  letter-spacing: -0.01em;
+  margin: 1.6em 0 0.6em;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid var(--color-line);
+}
+.wiki-article h3 {
+  @apply text-ink font-semibold;
+  font-size: 1.15rem;
+  margin: 1.4em 0 0.5em;
+}
+.wiki-article h4 { @apply font-semibold text-ink; margin: 1.2em 0 0.4em; }
+.wiki-article a { color: #1d4ed8; text-decoration: underline; text-underline-offset: 2px; }
+.wiki-article a:hover { color: #1e3a8a; }
+.wiki-article ul, .wiki-article ol { margin: 0 0 1em 1.4em; }
+.wiki-article li { margin-bottom: 0.35em; }
+.wiki-article blockquote {
+  border-left: 3px solid var(--color-accent);
+  padding-left: 1em;
+  margin: 0 0 1em;
+  color: var(--color-muted);
+  font-style: italic;
+}
+.wiki-article table.infobox {
+  float: right;
+  clear: right;
+  margin: 0 0 1em 1.2em;
+  max-width: 300px;
+  font-size: 0.82rem;
+  border: 1px solid var(--color-line);
+  background: #fff;
+}
+.wiki-article table.infobox th,
+.wiki-article table.infobox td {
+  padding: 0.35em 0.6em;
+  border-top: 1px solid var(--color-line);
+  vertical-align: top;
+}
+.wiki-article table.navbox,
+.wiki-article .navbox,
+.wiki-article .metadata,
+.wiki-article .noprint,
+.wiki-article .mw-editsection {
+  display: none;
+}
+.wiki-article .thumb, .wiki-article figure {
+  margin: 0 0 1em;
+  max-width: 320px;
+}
+.wiki-article .thumb img, .wiki-article figure img {
+  border-radius: 6px;
+  border: 1px solid var(--color-line);
+}
+.wiki-article .thumbcaption, .wiki-article figcaption {
+  font-size: 0.8rem;
+  color: var(--color-muted);
+  margin-top: 0.35em;
+}
+.wiki-article .reflist,
+.wiki-article .mw-references-wrap,
+.wiki-article ol.references {
+  display: none;
+}
+@media (max-width: 640px) {
+  .wiki-article table.infobox { float: none; max-width: 100%; margin: 0 0 1em; }
+}
+
+/* Skeleton shimmer */
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, #e9e6db 25%, #f4f2ea 50%, #e9e6db 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s linear infinite;
+  border-radius: 6px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .skeleton { animation: none; }
+}
+
+/* Thin elegant scrollbar for the reader panel */
+.reader-scroll::-webkit-scrollbar { width: 8px; }
+.reader-scroll::-webkit-scrollbar-track { background: transparent; }
+.reader-scroll::-webkit-scrollbar-thumb { background: #d6d0bd; border-radius: 8px; }
